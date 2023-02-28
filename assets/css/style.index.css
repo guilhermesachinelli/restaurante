@@ -1,7 +1,9 @@
 body {
     background-color: black;
     color: white;
-    margin: 0%;
+    margin-bottom: 0%;
+    margin-top: 0%;
+    font-family: cursive;
 }
 h1 {
     text-align: center;
