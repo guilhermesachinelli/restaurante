@@ -1,3 +1,18 @@
 body {
     background-color: greenyellow;
 }
+img {
+    width: 320px;
+    height: 300px;
+}
+#_p1{
+    text-align: center;
+}
+#_article1{
+    display: flex;
+    text-align: center;
+}
+p {
+    margin-left: 20px;
+    font-size: 20px;
+}
