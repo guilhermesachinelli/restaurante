@@ -1,0 +1,27 @@
+p{
+    text-align:center ;
+    font-size: 80px;
+}
+
+input{
+    width: 70px;
+    height: 70px;
+}
+
+body{
+    text-align: center;
+}
+
+button{
+    height: 80px;
+    width: 80px;
+}
+
+a{
+    background-color: greenyellow;
+    border: 1px solid grey;
+    text-decoration: none;
+    color: black;
+    border-radius: 5px;
+    padding: 7px;
+}
