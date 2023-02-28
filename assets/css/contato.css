@@ -18,4 +18,8 @@ input{
 
 #enviar_cor{
     color: rgb(106, 212, 68);
+}  
+
+body{
+    font-family: cursive;
 }
