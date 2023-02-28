@@ -8,3 +8,25 @@ h1 {
 #p_1 {
     text-align: center;
 }
+section {
+    display: flex;
+}
+#p_imgem {
+    
+}
+#div_2 {
+    display: flex;
+    margin-top: 5px;
+}
+.sections {
+    flex-direction: column;
+    border-style: solid;
+    border-color: black;
+}
+div {
+    background-color: rgb(0, 255, 0);
+    color: black;
+}
+.img_section {
+    margin: auto;
+}
