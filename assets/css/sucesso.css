@@ -16,3 +16,12 @@ button{
     height: 80px;
     width: 80px;
 }
+
+a{
+    background-color: greenyellow;
+    border: 1px solid grey;
+    text-decoration: none;
+    color: black;
+    border-radius: 5px;
+    padding: 7px;
+}
