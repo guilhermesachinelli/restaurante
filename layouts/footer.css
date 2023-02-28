@@ -4,5 +4,19 @@ footer{
     box-shadow: 6px;
 }
 img{
-    width: 64px;
+    width: 32px;
+}
+
+body{
+    margin: 0;
+    padding: 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+p{
+    margin: 0;
+    padding: 0;
+    margin-bottom: 10px;
 }
