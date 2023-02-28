@@ -1,0 +1,21 @@
+p{
+    font-size: 80px;
+    text-align: center;
+    color:green;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    width: 50%;
+}
+
+input{
+    margin-bottom: 30px;
+    border-radius: 5px;
+}
+
+#enviar_cor{
+    color: rgb(106, 212, 68);
+}
