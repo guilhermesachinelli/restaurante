@@ -1,25 +1,29 @@
-p{
+p {
     font-size: 80px;
     text-align: center;
-    color:green;
+    color: green;
 }
 
-form{
+form {
     display: flex;
     flex-direction: column;
     margin: auto;
     width: 50%;
 }
 
-input{
+input {
     margin-bottom: 30px;
     border-radius: 5px;
 }
 
-#enviar_cor{
+#enviar_cor {
     color: rgb(106, 212, 68);
-}  
+}
 
-body{
+body {
     font-family: cursive;
+    margin-top: 0%;
+    margin-bottom: 0%;
+    background-color: black;
+    color: white;
 }
