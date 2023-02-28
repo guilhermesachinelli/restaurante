@@ -12,7 +12,8 @@ section {
     display: flex;
 }
 #p_imgem {
-    
+    margin-left: 5px;
+
 }
 #div_2 {
     display: flex;
