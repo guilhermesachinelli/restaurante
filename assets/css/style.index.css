@@ -11,3 +11,22 @@ h1 {
 section {
     display: flex;
 }
+#p_imgem {
+    
+}
+#div_2 {
+    display: flex;
+    margin: 5px;
+}
+.sections {
+    flex-direction: column;
+    border-style: solid;
+    border-color: black;
+}
+div {
+    background-color: green;
+    color: black;
+}
+.img_section {
+    margin: auto;
+}
