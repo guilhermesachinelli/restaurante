@@ -21,3 +21,12 @@ body {
 p {
  font-size: x-large;
 }
+#Article-2{
+    background-color: rgb(0, 255, 0);
+    height: 400px;
+    margin: 10px;
+    border-radius: 10px;
+}
+#h_1{
+    text-align: center;
+}
