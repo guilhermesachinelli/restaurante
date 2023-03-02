@@ -8,13 +8,13 @@ div {
 }
 
 body {
-    background-color: red;
+    background-color: gainsboro ;
     font-family: cursive;
     margin: 0;
 }
 
 #Article-1 {
-    background-color: blue;
+    background-color: salmon;
     margin: 10px;
     border-radius: 10px;
     height: 300px;
@@ -25,11 +25,11 @@ body {
 }
 
 p {
- font-size: x-large;
+ font-size: 20px;
 }
 #Article-2{
-    background-color: yellowgreen;
-    height: 680px;
+    background-color: gainsboro;
+    height: 600px;
     margin: 10px;
     border-radius: 10px;
 }
@@ -42,9 +42,15 @@ p {
 }
 .sections {
     flex-direction: column;
+    justify-content: center;
+    background-color: salmon;
+    border-radius: 15px;
+    margin-left: 20px;
+    margin-right: 20px; 
+    height: 500px;
 }
 div {
-    background-color: yellowgreen;
+    background-color: gainsboro;
     color: black;
 }
 .img_section {
