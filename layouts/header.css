@@ -43,5 +43,26 @@ body{
 margin: 0;
 padding: 0;
 font-family: cursive;
+
+}
+
+@keyframes{
+
+}
+
+div{
+    animation-name: spin;
+    animation-duration: 1500ms;
+    animation-iteration-count: initial;
+    animation-timing-function: linear;
+}
+
+@keyframes spin {
+    from {
+        transform:rotate(0deg);
+    }
+    to {
+        transform:rotate(360deg);
+    }
 }
 
