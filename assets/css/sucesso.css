@@ -1,6 +1,6 @@
 p {
     text-align: center;
-    font-size: 80px;
+    font-size: 70px;
 }
 
 input {
@@ -15,6 +15,7 @@ body {
     margin-bottom: 0%;
     background-color: gainsboro;
     color: black;
+    margin: 0;
 }
 
 button {
@@ -23,7 +24,7 @@ button {
 }
 
 a {
-    background-color: greenyellow;
+    background-color: salmon;
     border: 1px solid grey;
     text-decoration: none;
     color: black;
