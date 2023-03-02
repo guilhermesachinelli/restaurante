@@ -14,10 +14,15 @@ body {
 }
 
 #Article-1 {
-    background-color: salmon;
+    background-color: gainsboro;
     margin: 10px;
     border-radius: 10px;
-    height: 300px;
+    height: 250px;
+    border-left: 7px solid salmon;
+    -webkit-box-shadow: 11px 15px 30px 0px rgba(0,0,0,0.35);
+    -moz-box-shadow: 11px 15px 30px 0px rgba(0,0,0,0.35);
+    box-shadow: 11px 15px 30px 0px rgba(0,0,0,0.35);
+    margin-bottom: 50px;
 }
 
 #h1_sobrenos {
@@ -26,6 +31,7 @@ body {
 
 p {
  font-size: 20px;
+ color: black;
 }
 #Article-2{
     background-color: gainsboro;
@@ -43,11 +49,15 @@ p {
 .sections {
     flex-direction: column;
     justify-content: center;
-    background-color: salmon;
+    background-color: gainsboro;
     border-radius: 15px;
     margin-left: 20px;
     margin-right: 20px; 
     height: 500px;
+    border-top: 7px solid salmon;
+    -webkit-box-shadow: 11px 15px 30px 0px rgba(0,0,0,0.35);
+    -moz-box-shadow: 11px 15px 30px 0px rgba(0,0,0,0.35);
+    box-shadow: 11px 15px 30px 0px rgba(0,0,0,0.35);
 }
 div {
     background-color: gainsboro;
@@ -55,4 +65,10 @@ div {
 }
 .img_section {
     margin: auto;
+}
+a{
+    text-decoration: none;
+}
+h3{
+    color: black;
 }
