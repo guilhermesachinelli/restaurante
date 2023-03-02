@@ -21,7 +21,6 @@ section {
     display: flex;
     margin: 5px;
     border-radius: 15px;
-    justify-content: center;
 }
 .sections {
     flex-direction: column;
