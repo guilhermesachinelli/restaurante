@@ -34,10 +34,14 @@ p {
  color: black;
 }
 #Article-2{
-    background-color: gainsboro;
-    height: 600px;
     margin: 10px;
+    margin-bottom: 20px;
     border-radius: 10px;
+    -webkit-box-shadow: 11px 15px 30px 0px rgba(0,0,0,0.35);
+    -moz-box-shadow: 11px 15px 30px 0px rgba(0,0,0,0.35);
+    box-shadow: 11px 15px 30px 0px rgba(0,0,0,0.35);
+    border-left: 7px solid salmon;
+
 }
 #h_1{
     text-align: center;
@@ -62,6 +66,7 @@ p {
 div {
     background-color: gainsboro;
     color: black;
+    justify-content: center;
 }
 .img_section {
     margin: auto;
