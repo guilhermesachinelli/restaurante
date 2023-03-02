@@ -2,6 +2,7 @@ body {
     background-color: gainsboro;
     margin: 0;
     font-family: cursive;
+    padding-bottom: 0%;
 }
 h1 {
     text-align: center;
@@ -49,3 +50,6 @@ box-shadow: 11px 15px 30px 0px rgba(0,0,0,0.35);
     margin: auto;
 }
 
+#iframe_footer {
+    margin-bottom: -5px;
+}

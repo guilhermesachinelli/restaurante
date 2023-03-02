@@ -36,17 +36,14 @@ a{
 }
 
 a:hover{
-    background-color: slategray;
+    background-color: gainsboro;
+    border-radius: 8px;
 }
 
 body{
 margin: 0;
 padding: 0;
 font-family: cursive;
-
-}
-
-@keyframes{
 
 }
 
