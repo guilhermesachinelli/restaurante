@@ -10,6 +10,7 @@ div {
 body {
     background-color: red;
     font-family: cursive;
+    margin: 0;
 }
 
 #Article-1 {
