@@ -1,0 +1,66 @@
+/* estilização do forms e dos inputs*/
+form {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    margin: auto;
+    width: 50%;
+}
+
+input {
+    text-align: center;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+body {
+    background: rgb(131, 58, 180);
+    background: linear-gradient(90deg, rgba(131, 58, 180, 1) 0%, rgba(253, 29, 29, 1) 50%, rgba(252, 176, 69, 1) 100%);
+}
+
+.animation {
+    animation: alerta 1.5s infinite;
+}
+
+.botao {
+    background: #09a513;
+    color: white;
+    border: 1px solid #09a513;
+    border-radius: 70px;
+    box-shadow: 0 0 0 0 rgba(9, 165, 19, 0.50);
+    font-size: 30px;
+    display: inline-block;
+    text-align: center;
+    width: 60px;
+    height: 60px;
+    line-height: 55px;
+    text-decoration: none;
+    transition: background, padding 500ms ease-in-out;
+}
+
+@keyframes alerta {
+    0% {
+        transform: scale();
+    }
+
+    70% {
+        transform: scale();
+        box-shadow: 0 0 0 50px rgba(69, 152, 27, 0);
+    }
+
+    100% {
+        transform: scale();
+        box-shadow: 0 0 0 0 rgba(69, 152, 27, 0);
+    }
+}
+
+#icons_malucos {
+    justify-content: center;
+    display: flex;
+    padding: 30px;
+}
+
+h1 {
+    text-shadow: rgb(255, 0, 255) 1px 0 10px;
+    text-align: center;
+}
