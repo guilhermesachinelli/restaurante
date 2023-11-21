@@ -1,0 +1,35 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 30
+    },
+    "auditLog": "c:\\Users\\aluno b\\.bito\\localcodesearch\\log\\.0d01ffdb6b5de8c712b52c2470e434aa39039b72-audit.json",
+    "files": [
+        {
+            "date": 1699544619204,
+            "name": "c:\\Users\\aluno b\\.bito\\localcodesearch\\log\\log.json-2023-11-09-12.log",
+            "hash": "ebb15d4ac5ca5cf6376af36b615da8d20ffe2c6a3128b40dca8b3ce7b1a1a9f6"
+        },
+        {
+            "date": 1699962259462,
+            "name": "c:\\Users\\aluno b\\.bito\\localcodesearch\\log\\log.json-2023-11-14-08.log",
+            "hash": "be57052e442d32e52ad5922e6ac48fa028a1459779203db710e3b46838fc38f2"
+        },
+        {
+            "date": 1700134683198,
+            "name": "c:\\Users\\aluno b\\.bito\\localcodesearch\\log\\log.json-2023-11-16-08.log",
+            "hash": "64f4b265d0a0cba4a782be48d1c92397f46971ce31315d49a65744d1b3c449fe"
+        },
+        {
+            "date": 1700140105873,
+            "name": "c:\\Users\\aluno b\\.bito\\localcodesearch\\log\\log.json-2023-11-16-10.log",
+            "hash": "2f73e5c30c3cc8bb1b6fbec8a93b3248ed7209cbf54dc14c8634e8e1b33ea423"
+        },
+        {
+            "date": 1700145468259,
+            "name": "c:\\Users\\aluno b\\.bito\\localcodesearch\\log\\log.json-2023-11-16-11.log",
+            "hash": "d240b48821edaf2d1bfde76b442485feedca5efdb81a21ccc5cb4f6e9ae22f14"
+        }
+    ],
+    "hashType": "sha256"
+}

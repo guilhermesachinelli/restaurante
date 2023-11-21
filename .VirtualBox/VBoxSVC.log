@@ -1,0 +1,536 @@
+00:00:00.004884 main     VirtualBox COM Server 7.0.6 r155176 win.amd64 (Jan 11 2023 16:38:38) release log
+00:00:00.004886 main     Log opened 2023-02-07T10:41:56.874465400Z
+00:00:00.004886 main     Build Type: release
+00:00:00.004899 main     OS Product: Windows 10
+00:00:00.004899 main     OS Release: 10.0.19045
+00:00:00.004899 main     OS Service Pack: 
+00:00:00.031228 main     DMI Product Name: Latitude 3420
+00:00:00.042874 main     DMI Product Version: 
+00:00:00.042884 main     Firmware type: UEFI
+00:00:00.043291 main     Secure Boot: VERR_PRIVILEGE_NOT_HELD
+00:00:00.043312 main     Host RAM: 7934MB (7.7GB) total, 2739MB (2.6GB) available
+00:00:00.043316 main     Executable: C:\Program Files\Oracle\VirtualBox\VBoxSVC.exe
+00:00:00.043316 main     Process ID: 8952
+00:00:00.043316 main     Package type: WINDOWS_64BITS_GENERIC
+00:00:00.137793          VirtualBox: object creation starts
+00:00:00.138047          Home directory: 'C:\Users\aluno b\.VirtualBox'
+00:00:00.138166          Installed Drivers:
+00:00:00.156620            C:\windows\system32\DRIVERS\VBoxNetLwf.sys (Version: 7.0.6.5176)
+00:00:00.170988            C:\windows\system32\DRIVERS\VBoxUSBMon.sys (Version: 7.0.6.5176)
+00:00:00.198726            C:\windows\system32\DRIVERS\VBoxSup.sys (Version: 7.0.6.5176)
+00:00:00.214566            C:\windows\system32\DRIVERS\VBoxNetAdp6.sys (Version: 7.0.6.5176)
+00:00:00.221729          Loading settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml" with version "1.12-windows"
+00:00:00.224683          usbLibGetDevices: Starting USB device enumeration
+00:00:00.242842          Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:00:00.244310          Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:00:00.247664          usbLibGetDevices: Found 3 USB devices, 0 captured
+00:00:00.247788          USB: Unknown USB device detected (idVendor: 0x0c45, idProduct: 0x6730)
+00:00:00.247948          USB: Unknown USB device detected (idVendor: 0x8087, idProduct: 0x0026)
+00:00:00.360830          HostDnsMonitor: initializing
+00:00:00.371867          HostDnsMonitor: updating information
+00:00:00.371925          HostDnsMonitor: old information
+00:00:00.371925            no server entries
+00:00:00.371926            no domain set
+00:00:00.371926            no search string entries
+00:00:00.371927          HostDnsMonitor: new information
+00:00:00.371927            server 1: 127.0.0.1
+00:00:00.371927            no domain set
+00:00:00.371927            no search string entries
+00:00:00.392918          VD: VDInit finished with VINF_SUCCESS
+00:00:00.670766          Loading settings file "C:\Users\aluno b\VirtualBox VMs 2\servidor\servidor.vbox" with version "1.19-windows"
+00:00:00.750341          OCI: Local config file 'C:\Users\aluno b\.VirtualBox\oci_config' does not exist
+00:00:00.750415          OCI: Original config file 'C:\Users\aluno b\.oci\config' does not exist
+00:00:00.750416          OCI: Reading profiles finished with status ERROR_SUCCESS
+00:00:00.750793          ExtPack: Created cloud provider 'OCI' (hrc=ERROR_SUCCESS)
+00:00:00.750886          VirtualBox: object created
+00:00:00.802677          Saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml" with version "1.12-windows"
+00:00:00.810688          Finished saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml"
+00:00:00.810866          Saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml" with version "1.12-windows"
+00:00:00.817380          Finished saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml"
+00:00:00.817564          Saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml" with version "1.12-windows"
+00:00:00.824078          Finished saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml"
+00:00:02.458101          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Saved)}, preserve=false aResultDetail=0
+00:08:12.541185 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:08:12.659204 USBPROXY Getting USB descriptor (id 2) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:08:12.659253 USBPROXY Getting USB descriptor (id 1) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:08:12.659260 USBPROXY Getting USB descriptor (id 5) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:08:12.662164 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:08:12.662323 USBPROXY usbLibGetDevices: Found 4 USB devices, 0 captured
+00:09:50.028499 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:09:50.335363 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:09:50.335504 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:13:36.982660          Saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml" with version "1.12-windows"
+00:13:36.988573          Finished saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml"
+00:13:36.988741          Saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml" with version "1.12-windows"
+00:13:36.994232          Finished saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml"
+00:13:36.994409          Saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml" with version "1.12-windows"
+00:13:36.999808          Finished saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml"
+00:13:37.675328          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Saved)}, preserve=false aResultDetail=0
+00:13:44.121179 dns-monitor HostDnsMonitor: updating information
+00:13:44.121201 dns-monitor HostDnsMonitor: unchanged
+00:13:55.737849 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:13:55.767178 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:13:55.768589 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:13:55.768692 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:13:59.084709 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:13:59.113925 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:13:59.115450 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:13:59.115562 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:13:59.707000 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:13:59.737264 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:13:59.738966 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:13:59.739084 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:14:00.827420 dns-monitor HostDnsMonitor: updating information
+00:14:00.827460 dns-monitor HostDnsMonitor: old information
+00:14:00.827462 dns-monitor   server 1: 127.0.0.1
+00:14:00.827465 dns-monitor   no domain set
+00:14:00.827467 dns-monitor   no search string entries
+00:14:00.827469 dns-monitor HostDnsMonitor: new information
+00:14:00.827471 dns-monitor   no server entries
+00:14:00.827473 dns-monitor   no domain set
+00:14:00.827475 dns-monitor   no search string entries
+00:14:02.620596 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:14:02.649563 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:14:02.651220 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:14:02.651336 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:14:03.711536 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:14:03.740540 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:14:03.742210 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:14:03.742326 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:14:06.318597 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:14:06.347876 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:14:06.349497 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:14:06.349622 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:14:07.288489 dns-monitor HostDnsMonitor: updating information
+00:14:07.288509 dns-monitor HostDnsMonitor: old information
+00:14:07.288511 dns-monitor   no server entries
+00:14:07.288513 dns-monitor   no domain set
+00:14:07.288515 dns-monitor   no search string entries
+00:14:07.288517 dns-monitor HostDnsMonitor: new information
+00:14:07.288519 dns-monitor   server 1: 192.168.1.254
+00:14:07.288521 dns-monitor   server 2: 192.168.68.1
+00:14:07.288524 dns-monitor   no domain set
+00:14:07.288526 dns-monitor   no search string entries
+00:14:07.315332 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:14:07.344403 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:14:07.346102 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:14:07.346221 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:14:25.946604 dns-monitor HostDnsMonitor: updating information
+00:14:25.946622 dns-monitor HostDnsMonitor: old information
+00:14:25.946624 dns-monitor   server 1: 192.168.1.254
+00:14:25.946627 dns-monitor   server 2: 192.168.68.1
+00:14:25.946629 dns-monitor   no domain set
+00:14:25.946631 dns-monitor   no search string entries
+00:14:25.946633 dns-monitor HostDnsMonitor: new information
+00:14:25.946635 dns-monitor   server 1: 127.0.0.1
+00:14:25.946637 dns-monitor   no domain set
+00:14:25.946639 dns-monitor   no search string entries
+00:14:33.312805          ERROR [COM]: aRC=E_NOTIMPL (0x80004001) aIID={6f89464f-7773-436a-a4df-592e4e537fa0} aComponent={UnattendedWrap} aText={Failed to open 'b' (VERR_FILE_NOT_FOUND)}, preserve=false aResultDetail=-102
+00:14:34.329548          ERROR [COM]: aRC=E_NOTIMPL (0x80004001) aIID={6f89464f-7773-436a-a4df-592e4e537fa0} aComponent={UnattendedWrap} aText={Failed to open '' (VERR_PATH_NOT_FOUND)}, preserve=false aResultDetail=-103
+00:14:34.344356 dns-monitor HostDnsMonitor: updating information
+00:14:34.344388 dns-monitor HostDnsMonitor: old information
+00:14:34.344390 dns-monitor   server 1: 127.0.0.1
+00:14:34.344393 dns-monitor   no domain set
+00:14:34.344395 dns-monitor   no search string entries
+00:14:34.344398 dns-monitor HostDnsMonitor: new information
+00:14:34.344400 dns-monitor   server 1: 192.168.1.254
+00:14:34.344402 dns-monitor   server 2: 192.168.68.1
+00:14:34.344405 dns-monitor   no domain set
+00:14:34.344407 dns-monitor   no search string entries
+00:14:44.160365 dns-monitor HostDnsMonitor: updating information
+00:14:44.160387 dns-monitor HostDnsMonitor: old information
+00:14:44.160393 dns-monitor   server 1: 192.168.1.254
+00:14:44.160398 dns-monitor   server 2: 192.168.68.1
+00:14:44.160401 dns-monitor   no domain set
+00:14:44.160403 dns-monitor   no search string entries
+00:14:44.160405 dns-monitor HostDnsMonitor: new information
+00:14:44.160407 dns-monitor   server 1: 127.0.0.1
+00:14:44.160409 dns-monitor   no domain set
+00:14:44.160411 dns-monitor   no search string entries
+00:14:50.294276          Unattended: .disk/info: Unknown: diskname='neon user "Jammy"'
+00:14:50.305843          Saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml" with version "1.12-windows"
+00:14:50.311939          Finished saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml"
+00:14:50.312926          Saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml" with version "1.12-windows"
+00:14:50.318543          Finished saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml"
+00:14:52.557898 dns-monitor HostDnsMonitor: updating information
+00:14:52.557921 dns-monitor HostDnsMonitor: unchanged
+00:15:48.580631 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:15:48.597116 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:15:48.598548 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:15:48.598660 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:15:53.110713 dns-monitor HostDnsMonitor: updating information
+00:15:53.110726 dns-monitor HostDnsMonitor: unchanged
+00:16:05.190825 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:16:05.220103 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:16:05.221791 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:16:05.221908 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:16:09.103180 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:16:09.132187 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:16:09.133753 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:16:09.133879 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:16:10.220576 dns-monitor HostDnsMonitor: updating information
+00:16:10.220605 dns-monitor HostDnsMonitor: old information
+00:16:10.220608 dns-monitor   server 1: 127.0.0.1
+00:16:10.220610 dns-monitor   no domain set
+00:16:10.220612 dns-monitor   no search string entries
+00:16:10.220614 dns-monitor HostDnsMonitor: new information
+00:16:10.220616 dns-monitor   no server entries
+00:16:10.220618 dns-monitor   no domain set
+00:16:10.220620 dns-monitor   no search string entries
+00:16:12.154372 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:16:12.183155 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:16:12.184597 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:16:12.184699 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:16:13.198528 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:16:13.227773 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:16:13.229597 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:16:13.229723 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:16:15.762343 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:16:15.791905 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:16:15.793510 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:16:15.793634 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:16:15.888940 dns-monitor HostDnsMonitor: updating information
+00:16:15.888959 dns-monitor HostDnsMonitor: old information
+00:16:15.888962 dns-monitor   no server entries
+00:16:15.888964 dns-monitor   no domain set
+00:16:15.888966 dns-monitor   no search string entries
+00:16:15.888968 dns-monitor HostDnsMonitor: new information
+00:16:15.888970 dns-monitor   server 1: 192.168.1.254
+00:16:15.888972 dns-monitor   server 2: 192.168.68.1
+00:16:15.888974 dns-monitor   no domain set
+00:16:15.888976 dns-monitor   no search string entries
+00:16:16.703623 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:16:16.734170 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:16:16.735751 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:16:16.735867 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:16:33.521725 dns-monitor HostDnsMonitor: updating information
+00:16:33.521745 dns-monitor HostDnsMonitor: old information
+00:16:33.521747 dns-monitor   server 1: 192.168.1.254
+00:16:33.521750 dns-monitor   server 2: 192.168.68.1
+00:16:33.521752 dns-monitor   no domain set
+00:16:33.521754 dns-monitor   no search string entries
+00:16:33.521756 dns-monitor HostDnsMonitor: new information
+00:16:33.521758 dns-monitor   server 1: 127.0.0.1
+00:16:33.521760 dns-monitor   no domain set
+00:16:33.521762 dns-monitor   no search string entries
+00:16:42.855784 dns-monitor HostDnsMonitor: updating information
+00:16:42.855801 dns-monitor HostDnsMonitor: unchanged
+00:17:54.075818 createBase Saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml" with version "1.12-windows"
+00:17:54.083669 createBase Finished saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml"
+00:17:54.091977          Saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox" with version "1.19-windows"
+00:17:54.096635          Finished saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox"
+00:17:54.096779          Saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml" with version "1.12-windows"
+00:17:54.101953          Finished saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml"
+00:17:54.105032          Saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml" with version "1.12-windows"
+00:17:54.111216          Finished saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml"
+00:17:54.111759          Saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml" with version "1.12-windows"
+00:17:54.117209          Finished saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml"
+00:17:54.118158          Saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml" with version "1.12-windows"
+00:17:54.123916          Finished saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml"
+00:17:54.124426          Saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox" with version "1.19-windows"
+00:17:54.130086          Finished saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox"
+00:17:54.150768          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is PoweredOff)}, preserve=false aResultDetail=0
+00:17:54.191140          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is PoweredOff)}, preserve=false aResultDetail=0
+00:17:58.125109 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:17:58.154272 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:17:58.155835 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:17:58.155956 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:18:14.023556          Saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml" with version "1.12-windows"
+00:18:14.034593          Finished saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml"
+00:18:14.038890          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is PoweredOff)}, preserve=false aResultDetail=0
+00:18:14.046855          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is PoweredOff)}, preserve=false aResultDetail=0
+00:18:17.373601          Launched VM: 3854323664 pid: 13608 (0x3528) frontend: GUI/Qt name: neon
+00:18:17.387884          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is PoweredOff)}, preserve=false aResultDetail=0
+00:18:17.390326          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is PoweredOff)}, preserve=false aResultDetail=0
+00:18:23.951557          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is PoweredOff)}, preserve=false aResultDetail=0
+00:18:23.951769          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is PoweredOff)}, preserve=false aResultDetail=0
+00:18:24.443225          Load [C:\Program Files\Oracle\VirtualBox\ExtensionPacks\Oracle_VM_VirtualBox_Extension_Pack\win.amd64\VBoxHostWebcam.DLL] vrc=VINF_SUCCESS
+00:18:26.947139          ERROR [COM]: aRC=VBOX_E_IPRT_ERROR (0x80bb0005) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={SessionMachine} aText={Saved screenshot data is not available (VERR_NOT_SUPPORTED)}, preserve=false aResultDetail=-37
+00:18:27.301698          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Starting)}, preserve=false aResultDetail=0
+00:18:27.302702          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Starting)}, preserve=false aResultDetail=0
+00:18:27.303871          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={SessionMachine} aText={The machine is not mutable or saved (state is Starting)}, preserve=false aResultDetail=0
+00:18:27.305804          Saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox" with version "1.19-windows"
+00:18:27.316153          Finished saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox"
+00:18:27.327194          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Starting)}, preserve=false aResultDetail=0
+00:18:27.327272          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Starting)}, preserve=false aResultDetail=0
+00:18:29.373750          ERROR [COM]: aRC=VBOX_E_OBJECT_NOT_FOUND (0x80bb0001) aIID={ad47ad09-787b-44ab-b343-a082a3f2dfb1} aComponent={MediumWrap} aText={Property 'CRYPT/KeyId' does not exist}, preserve=false aResultDetail=0
+00:18:29.374128          ERROR [COM]: aRC=VBOX_E_OBJECT_NOT_FOUND (0x80bb0001) aIID={ad47ad09-787b-44ab-b343-a082a3f2dfb1} aComponent={MediumWrap} aText={Property 'CRYPT/KeyId' does not exist}, preserve=false aResultDetail=0
+00:18:29.409354          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:18:29.409540          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:18:30.598917          Saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox" with version "1.19-windows"
+00:18:30.606602          Finished saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox"
+00:18:30.614660          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:18:30.614693          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:18:35.160430          Saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox" with version "1.19-windows"
+00:18:35.170184          Finished saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox"
+00:18:35.179769          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:18:35.179803          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:20:37.407837 dns-monitor HostDnsMonitor: updating information
+00:20:37.407857 dns-monitor HostDnsMonitor: unchanged
+00:20:45.541611          Saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox" with version "1.19-windows"
+00:20:45.551229          Finished saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox"
+00:20:45.561755          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:20:45.562075          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:20:55.918495          ERROR [COM]: aRC=VBOX_E_IPRT_ERROR (0x80bb0005) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={SessionMachine} aText={Saved screenshot data is not available (VERR_NOT_SUPPORTED)}, preserve=false aResultDetail=-37
+00:20:55.949202          Saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox" with version "1.19-windows"
+00:20:55.958810          Finished saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox"
+00:20:55.968876          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:20:55.969149          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:20:56.241813          Saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox" with version "1.19-windows"
+00:20:56.249189          Finished saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox"
+00:20:56.257836          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:20:56.257871          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:20:57.738170          Saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox" with version "1.19-windows"
+00:20:57.745932          Finished saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox"
+00:20:57.754176          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:20:57.754213          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:21:00.222073          Saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox" with version "1.19-windows"
+00:21:00.230268          Finished saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox"
+00:21:00.239144          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:21:00.239345          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:21:03.073547          Saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml" with version "1.12-windows"
+00:21:03.083728          Finished saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml"
+00:21:03.653528          Saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml" with version "1.12-windows"
+00:21:03.661763          Finished saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml"
+00:21:08.865057          Saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox" with version "1.19-windows"
+00:21:08.873643          Finished saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox"
+00:21:08.886802          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:21:08.887528          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:23:46.301974          Saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox" with version "1.19-windows"
+00:23:46.310452          Finished saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox"
+00:23:46.323955          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:23:46.324471          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:23:46.722078          Saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml" with version "1.12-windows"
+00:23:46.732237          Finished saving settings file "C:\Users\aluno b\.VirtualBox\VirtualBox.xml"
+00:23:49.268896          Saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox" with version "1.19-windows"
+00:23:49.276852          Finished saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox"
+00:23:49.286375          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:23:49.286417          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:27:09.007401 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:27:09.022932 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:27:09.024595 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:27:09.024735 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:27:10.089784 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:27:10.102024 dns-monitor HostDnsMonitor: updating information
+00:27:10.102053 dns-monitor HostDnsMonitor: old information
+00:27:10.102055 dns-monitor   server 1: 127.0.0.1
+00:27:10.102058 dns-monitor   no domain set
+00:27:10.102060 dns-monitor   no search string entries
+00:27:10.102062 dns-monitor HostDnsMonitor: new information
+00:27:10.102064 dns-monitor   server 1: 127.0.0.1
+00:27:10.102066 dns-monitor   domain: educ564
+00:27:10.102068 dns-monitor   no search string entries
+00:27:10.105435 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:27:10.106966 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:27:10.107079 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:27:17.751034 dns-monitor HostDnsMonitor: updating information
+00:27:17.751055 dns-monitor HostDnsMonitor: old information
+00:27:17.751057 dns-monitor   server 1: 127.0.0.1
+00:27:17.751060 dns-monitor   domain: educ564
+00:27:17.751062 dns-monitor   no search string entries
+00:27:17.751066 dns-monitor HostDnsMonitor: new information
+00:27:17.751068 dns-monitor   server 1: 127.0.0.1
+00:27:17.751071 dns-monitor   no domain set
+00:27:17.751073 dns-monitor   no search string entries
+00:27:18.600072 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:27:18.615552 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:27:18.617232 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:27:18.617349 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:27:19.694120 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:27:19.709307 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:27:19.710948 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:27:19.711074 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:27:23.041785 dns-monitor HostDnsMonitor: updating information
+00:27:23.041806 dns-monitor HostDnsMonitor: unchanged
+00:27:32.081895 dns-monitor HostDnsMonitor: updating information
+00:27:32.081915 dns-monitor HostDnsMonitor: old information
+00:27:32.081918 dns-monitor   server 1: 127.0.0.1
+00:27:32.081920 dns-monitor   no domain set
+00:27:32.081922 dns-monitor   no search string entries
+00:27:32.081924 dns-monitor HostDnsMonitor: new information
+00:27:32.081930 dns-monitor   server 1: 192.168.1.254
+00:27:32.081933 dns-monitor   server 2: 192.168.68.1
+00:27:32.081936 dns-monitor   no domain set
+00:27:32.081937 dns-monitor   no search string entries
+00:27:42.054748 dns-monitor HostDnsMonitor: updating information
+00:27:42.054786 dns-monitor HostDnsMonitor: old information
+00:27:42.054789 dns-monitor   server 1: 192.168.1.254
+00:27:42.054792 dns-monitor   server 2: 192.168.68.1
+00:27:42.054795 dns-monitor   no domain set
+00:27:42.054797 dns-monitor   no search string entries
+00:27:42.054799 dns-monitor HostDnsMonitor: new information
+00:27:42.054801 dns-monitor   server 1: 127.0.0.1
+00:27:42.054804 dns-monitor   no domain set
+00:27:42.054806 dns-monitor   no search string entries
+00:27:50.687107 dns-monitor HostDnsMonitor: updating information
+00:27:50.687127 dns-monitor HostDnsMonitor: old information
+00:27:50.687129 dns-monitor   server 1: 127.0.0.1
+00:27:50.687132 dns-monitor   no domain set
+00:27:50.687134 dns-monitor   no search string entries
+00:27:50.687136 dns-monitor HostDnsMonitor: new information
+00:27:50.687138 dns-monitor   server 1: 192.168.1.254
+00:27:50.687140 dns-monitor   server 2: 192.168.68.1
+00:27:50.687142 dns-monitor   no domain set
+00:27:50.687144 dns-monitor   no search string entries
+00:27:55.644209 dns-monitor HostDnsMonitor: updating information
+00:27:55.644230 dns-monitor HostDnsMonitor: old information
+00:27:55.644232 dns-monitor   server 1: 192.168.1.254
+00:27:55.644235 dns-monitor   server 2: 192.168.68.1
+00:27:55.644237 dns-monitor   no domain set
+00:27:55.644239 dns-monitor   no search string entries
+00:27:55.644241 dns-monitor HostDnsMonitor: new information
+00:27:55.644243 dns-monitor   server 1: 127.0.0.1
+00:27:55.644245 dns-monitor   no domain set
+00:27:55.644247 dns-monitor   no search string entries
+00:28:04.198924 dns-monitor HostDnsMonitor: updating information
+00:28:04.198944 dns-monitor HostDnsMonitor: unchanged
+00:28:13.520718 dns-monitor HostDnsMonitor: updating information
+00:28:13.520747 dns-monitor HostDnsMonitor: old information
+00:28:13.520750 dns-monitor   server 1: 127.0.0.1
+00:28:13.520753 dns-monitor   no domain set
+00:28:13.520755 dns-monitor   no search string entries
+00:28:13.520757 dns-monitor HostDnsMonitor: new information
+00:28:13.520759 dns-monitor   server 1: 192.168.1.254
+00:28:13.520761 dns-monitor   server 2: 192.168.68.1
+00:28:13.520763 dns-monitor   no domain set
+00:28:13.520765 dns-monitor   no search string entries
+00:28:19.366869 dns-monitor HostDnsMonitor: updating information
+00:28:19.366888 dns-monitor HostDnsMonitor: old information
+00:28:19.366891 dns-monitor   server 1: 192.168.1.254
+00:28:19.366893 dns-monitor   server 2: 192.168.68.1
+00:28:19.366896 dns-monitor   no domain set
+00:28:19.366897 dns-monitor   no search string entries
+00:28:19.366900 dns-monitor HostDnsMonitor: new information
+00:28:19.366901 dns-monitor   server 1: 127.0.0.1
+00:28:19.366903 dns-monitor   no domain set
+00:28:19.366905 dns-monitor   no search string entries
+00:31:32.247107 dns-monitor HostDnsMonitor: updating information
+00:31:32.247127 dns-monitor HostDnsMonitor: unchanged
+00:31:43.787656 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:31:43.802486 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:31:43.804083 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:31:43.804326 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:31:47.154932 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:31:47.168997 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:31:47.170396 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:31:47.170530 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:31:47.896675 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:31:47.911986 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:31:47.913506 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:31:47.913609 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:31:48.809709 dns-monitor HostDnsMonitor: updating information
+00:31:48.809745 dns-monitor HostDnsMonitor: old information
+00:31:48.809748 dns-monitor   server 1: 127.0.0.1
+00:31:48.809750 dns-monitor   no domain set
+00:31:48.809753 dns-monitor   no search string entries
+00:31:48.809755 dns-monitor HostDnsMonitor: new information
+00:31:48.809757 dns-monitor   no server entries
+00:31:48.809759 dns-monitor   no domain set
+00:31:48.809761 dns-monitor   no search string entries
+00:31:51.116713 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:31:51.132214 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:31:51.133629 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:31:51.133760 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:31:52.134978 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:31:52.149827 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:31:52.151321 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:31:52.151479 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:31:52.512763 dns-monitor HostDnsMonitor: updating information
+00:31:52.512782 dns-monitor HostDnsMonitor: old information
+00:31:52.512784 dns-monitor   no server entries
+00:31:52.512787 dns-monitor   no domain set
+00:31:52.512789 dns-monitor   no search string entries
+00:31:52.512791 dns-monitor HostDnsMonitor: new information
+00:31:52.512794 dns-monitor   server 1: 10.88.196.7
+00:31:52.512796 dns-monitor   server 2: 10.88.196.8
+00:31:52.512798 dns-monitor   domain: educ564
+00:31:52.512801 dns-monitor   no search string entries
+00:31:59.589608 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:31:59.603730 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:31:59.605121 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:31:59.605289 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:32:00.409495 dns-monitor HostDnsMonitor: updating information
+00:32:00.409518 dns-monitor HostDnsMonitor: unchanged
+00:32:01.867153 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:32:01.883867 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:32:01.885424 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:32:01.885609 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:32:02.608421 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:32:02.622671 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:32:02.624150 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:32:02.624315 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:33:36.932007 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:33:36.946386 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:33:36.949583 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:35:41.963265 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:35:41.983090 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:35:41.983241 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+00:36:41.926323          Saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox" with version "1.19-windows"
+00:36:41.934351          Finished saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox"
+00:36:41.948850          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:36:41.949257          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+00:37:37.370503 USBPROXY usbLibGetDevices: Starting USB device enumeration
+00:37:37.384594 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+00:37:37.385857 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+00:37:37.385968 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+02:19:46.009957          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Paused)}, preserve=false aResultDetail=0
+02:19:46.022076          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Paused)}, preserve=false aResultDetail=0
+02:19:47.294972          Saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox" with version "1.19-windows"
+02:19:47.304015          Finished saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox"
+02:19:47.358779          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Saving)}, preserve=false aResultDetail=0
+02:19:47.367379          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Saving)}, preserve=false aResultDetail=0
+02:19:56.682429          Saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox" with version "1.19-windows"
+02:19:56.690951          Finished saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox"
+02:19:56.698636          ERROR [COM]: aRC=VBOX_E_IPRT_ERROR (0x80bb0005) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={Saved screenshot thumbnail data is not available (VERR_NOT_SUPPORTED)}, preserve=false aResultDetail=-37
+02:19:56.700718 SaveState Saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox" with version "1.19-windows"
+02:19:56.708498 SaveState Finished saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox"
+02:19:56.718253          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Saved)}, preserve=false aResultDetail=0
+02:19:56.727449          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Saved)}, preserve=false aResultDetail=0
+02:19:58.220079          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Saved)}, preserve=false aResultDetail=0
+02:19:58.223587          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Saved)}, preserve=false aResultDetail=0
+02:20:04.024763          Launched VM: 3892052560 pid: 13700 (0x3584) frontend: GUI/Qt name: neon
+02:20:04.031823          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Saved)}, preserve=false aResultDetail=0
+02:20:04.038232          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Saved)}, preserve=false aResultDetail=0
+02:20:11.642105          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Saved)}, preserve=false aResultDetail=0
+02:20:11.642148          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Saved)}, preserve=false aResultDetail=0
+02:20:12.126575          Load [C:\Program Files\Oracle\VirtualBox\ExtensionPacks\Oracle_VM_VirtualBox_Extension_Pack\win.amd64\VBoxHostWebcam.DLL] vrc=VINF_SUCCESS
+02:20:31.530000          Saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox" with version "1.19-windows"
+02:20:31.536525          Finished saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox"
+02:20:31.544903          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Saved)}, preserve=false aResultDetail=0
+02:20:31.544937          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Saved)}, preserve=false aResultDetail=0
+02:20:31.800149          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Restoring)}, preserve=false aResultDetail=0
+02:20:31.806434          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Restoring)}, preserve=false aResultDetail=0
+02:20:31.842688          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={SessionMachine} aText={The machine is not mutable or saved (state is Restoring)}, preserve=false aResultDetail=0
+02:20:34.022871          ERROR [COM]: aRC=VBOX_E_OBJECT_NOT_FOUND (0x80bb0001) aIID={ad47ad09-787b-44ab-b343-a082a3f2dfb1} aComponent={MediumWrap} aText={Property 'CRYPT/KeyId' does not exist}, preserve=false aResultDetail=0
+02:20:38.246926          Saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox" with version "1.19-windows"
+02:20:38.256328          Finished saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox"
+02:20:38.285294          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+02:20:38.303095          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Running)}, preserve=false aResultDetail=0
+02:20:39.512664          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Paused)}, preserve=false aResultDetail=0
+02:20:39.518157          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Paused)}, preserve=false aResultDetail=0
+02:20:42.518088          Saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox" with version "1.19-windows"
+02:20:42.526726          Finished saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox"
+02:20:42.549082          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Stopping)}, preserve=false aResultDetail=0
+02:20:42.550442          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is Stopping)}, preserve=false aResultDetail=0
+02:20:42.620317          Saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox" with version "1.19-windows"
+02:20:42.626965          Finished saving settings file "C:\Users\aluno b\VirtualBox VMs\neon\neon.vbox"
+02:20:42.637925          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is PoweredOff)}, preserve=false aResultDetail=0
+02:20:42.637951          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is PoweredOff)}, preserve=false aResultDetail=0
+02:20:43.642573          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is PoweredOff)}, preserve=false aResultDetail=0
+02:20:43.642627          ERROR [COM]: aRC=VBOX_E_INVALID_VM_STATE (0x80bb0002) aIID={300763af-5d6b-46e6-aa96-273eac15538a} aComponent={MachineWrap} aText={The machine is not mutable (state is PoweredOff)}, preserve=false aResultDetail=0
+05:48:15.635606 USBPROXY usbLibGetDevices: Starting USB device enumeration
+05:48:15.656206 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+05:48:15.656559 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+05:49:28.405886 USBPROXY usbLibGetDevices: Starting USB device enumeration
+05:49:28.435200 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 6
+05:49:28.436859 USBPROXY Getting USB descriptor (id 0) failed (dwErr=31) on hub USB#ROOT_HUB30#4&20029dde&0&0#{f18a0e88-c30c-11d0-8815-00a0c906bed8} port 10
+05:49:28.437086 USBPROXY usbLibGetDevices: Found 3 USB devices, 0 captured
+06:09:59.647654 main     WM_QUERYENDSESSION: shutdown (0x00000000)
+06:09:59.647804 main     VBoxSvc has active connections: bActivity = false, lock count = 2
+06:10:00.491517 main     VirtualBox: object deletion starts
+06:10:00.492125 main     ERROR [COM]: aRC=VBOX_E_OBJECT_IN_USE (0x80bb000c) aIID={ad47ad09-787b-44ab-b343-a082a3f2dfb1} aComponent={MediumWrap} aText={Medium 'C:\Users\aluno b\VirtualBox VMs 2\servidor\servidor.vdi' cannot be closed because it is still attached to 1 virtual machines}, preserve=false aResultDetail=0
+06:10:00.493911 main     ERROR [COM]: aRC=VBOX_E_OBJECT_IN_USE (0x80bb000c) aIID={ad47ad09-787b-44ab-b343-a082a3f2dfb1} aComponent={MediumWrap} aText={Medium 'C:\Users\aluno b\VirtualBox VMs\neon\neon.vdi' cannot be closed because it is still attached to 1 virtual machines}, preserve=false aResultDetail=0
+06:10:00.495837 main     HostDnsMonitor: shutting down ...
+06:10:00.496003 main     HostDnsMonitor: shut down
+06:10:00.498540 Watcher  ERROR [COM]: aRC=E_ACCESSDENIED (0x80070005) aIID={7682d5eb-f00e-44f1-8ca2-99d08b1cd607} aComponent={VirtualBoxWrap} aText={The object is not ready}, preserve=false aResultDetail=0
+06:10:00.499173 main     VirtualBox: object deleted

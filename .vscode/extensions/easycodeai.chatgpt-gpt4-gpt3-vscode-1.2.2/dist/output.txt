@@ -1,0 +1,3888 @@
+<passage file_path=src/webview/redux/webviewToExtensionApi.ts>
+  }),
+});
+
+export type ExtensionApiEndpoint = keyof typeof webviewToExtensionApi.endpoints;
+
+export const {
+  useGetModelQuery, useGetMessagesQuery, useGetMessageHistoryListQuery, useGetAllDirectoriesFileTreeQuery
+
+</passage><passage file_path=src/webview/redux/webviewToExtensionApi.ts>
+};
+
+export const webviewToExtensionApi = createApi({
+  reducerPath: 'extensionApi',
+  baseQuery: vscodeBaseQuery,
+  tagTypes: ['User', 'MessageHistoryList', 'FileTree'],
+  keepUnusedDataFor: 60 * 10,
+
+</passage><passage file_path=src/webview/redux/store.ts>
+import { configureStore } from '@reduxjs/toolkit';
+import { setupListeners } from '@reduxjs/toolkit/query';
+import { webviewToExtensionApi } from './webviewToExtensionApi';
+import { askCodebaseChecked, askWebChecked, inputText } from './uiActions';
+import { errorModal } from './error';
+
+export const store = configureStore({
+  reducer: {
+    [webviewToExtensionApi.reducerPath]: webviewToExtensionApi.reducer,
+    firstMessageInputText: inputText.reducer,
+    firstMessageAskCodebaseChecked: askCodebaseChecked.reducer,
+    firstMessageAskWebChecked: askWebChecked.reducer,
+    errorState: errorModal.reducer,
+  },
+  middleware: (getDefaultMiddleware) => (
+    getDefaultMiddleware().concat(webviewToExtensionApi.middleware)
+  ),
+});
+
+setupListeners(store.dispatch);
+
+export type RootState = ReturnType<typeof store.getState>;
+
+</passage><passage file_path=src/webview/redux/webviewToExtensionApi.ts>
+import { nanoid } from '@reduxjs/toolkit';
+import { createApi } from '@reduxjs/toolkit/query/react';
+import vscode from '../vscode';
+import type { EasyCodeUser } from '../../apis/extensionToServerApi';
+import type { DirectoryData, EasyCodeChatMessage, FileTreeNode } from '../../types/types';
+import type { ExtensionToWebviewMessage, WebviewToExtensionMessage } from '../../types/webviewToExtensionTypes';
+import type { QueryReturnValue } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
+import type { BaseQueryFn } from '@reduxjs/toolkit/query';
+
+type VscodeBaseQueryReturnValue = QueryReturnValue<
+  WebviewToExtensionMessage['data'],
+  WebviewToExtensionMessage['error'],
+  Pick<ExtensionToWebviewMessage, 'type' | 'id'>
+>;
+
+</passage><passage file_path=src/webview/hooks/redux.ts>
+import { useDispatch, useSelector } from 'react-redux';
+import { useActionData, useLoaderData, useRouteLoaderData } from 'react-router-dom';
+import type { ExtensionApiEndpoint } from '../redux/webviewToExtensionApi';
+import type { AppDispatch, RootState } from '../redux/store';
+import type { JsonType } from '../routes/types';
+import type { TypedUseSelectorHook } from 'react-redux';
+
+export const useAppDispatch: () => AppDispatch = useDispatch;
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+
+export const useAppActionData = useActionData as <T extends ExtensionApiEndpoint>() =>
+  | JsonType<T>
+  | null
+  | undefined;
+
+export const useAppLoaderData = useLoaderData as <T extends ExtensionApiEndpoint>() =>
+  | JsonType<T>
+  | null
+  | undefined;
+
+export const useAppRouteLoaderData = useRouteLoaderData as <T extends ExtensionApiEndpoint>(routeId: string) =>
+  | JsonType<T>
+  | null
+
+</passage><passage file_path=src/webview/pages/data/signup.ts>
+import { json, redirect } from 'react-router-dom';
+import { webviewToExtensionApi } from '../../redux/webviewToExtensionApi';
+import { store } from '../../redux/store';
+import Signup from '../components/Signup';
+import type { JsonType } from '../../routes/types';
+import type { ActionFunction } from '@remix-run/router';
+
+
+</passage><passage file_path=src/webview/pages/data/chatTab.ts>
+import { json } from 'react-router-dom';
+import { webviewToExtensionApi } from '../../redux/webviewToExtensionApi';
+import { store } from '../../redux/store';
+import ChatTab from '../components/ChatTab';
+import type { JsonType } from '../../routes/types';
+import type { ActionFunction } from '@remix-run/router';
+import type { LoaderFunction } from 'react-router-dom';
+import { useAppDispatch } from '../../hooks';
+import { errorModal } from '../../redux/error';
+
+const loader: LoaderFunction = async ({ params }) => {
+  const { tabId } = params;
+
+  const messagesPromise = store.dispatch(webviewToExtensionApi.endpoints.getMessages.initiate({ tabId }));
+  const messages = await messagesPromise;
+  messagesPromise.unsubscribe();
+
+  const { data, error } = messages;
+  return json<JsonType<'getMessages'>>({ getMessages: { data, error } });
+};
+
+
+</passage><passage file_path=src/webviewProvider/reactWebviewViewProvider.ts>
+	};
+
+	const easyCodeLogout: WebviewToExtensionMessageHandler = async ({ id }) => {
+		await easyCodeClient.logout();
+	}
+
+	const handleAddTab: WebviewToExtensionMessageHandler = async ({ id }) => {
+		let newTabId = await addNewChatTab();
+
+		await postMessage({
+			id,
+			type: 'response',
+			data: { newTabId: newTabId },
+		});
+	}
+
+	const handleDeleteTab: WebviewToExtensionMessageHandler<"deleteTab"> = async ({ id, data }) => {
+		await deleteChatTab(data?.tabIdToDelete);
+		await postMessage({
+			id,
+			type: 'response',
+			data: {},
+		});
+	}
+
+	const handleCopyCode: WebviewToExtensionMessageHandler<"copy-code"> = async ( { id, data}) => {
+		// do nothing if the copyOnClick option is disabled
+		/*
+		if (!this._settings.copyOnClick) {
+			break;
+		}*/
+		getMixPanel()?.track('Copied Code', {
+			distinct_id: legacyWebviewViewProvider.getMachineId()
+		});
+		let code = data.code;
+		vscode.env.clipboard.writeText(code);
+		vscode.window.showInformationMessage('Code copied to clipboard');
+	}
+
+
+</passage><passage file_path=src/webview/pages/components/ChatLayout.tsx>
+import { Select, SelectItem, Selection } from '@nextui-org/react';
+import { useCallback, useContext, useEffect, useRef } from 'react';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
+//import { useAppLoaderData } from '../../hooks';
+import { webviewToExtensionApi, useGetMessageHistoryListQuery } from '../../redux/webviewToExtensionApi';
+import { store } from '../../redux/store';
+import ChatHistoryMenuItemContext, { ChatHistoryMenuItemConsumer } from '../../components/ChatHistoryMenuItemContext';
+import { UilTrash } from '@iconscout/react-unicons'
+import { IoTrashOutline } from 'react-icons/io5';
+
+
+</passage><passage file_path=easycode/rank_gpt/NovelEval/data.json>
+version of it. In other words, no more file copying hacks. However, there are two versions of 2.0.0. torch==2.0.0+cu117 Still uses cuDNN 8.5 and torch==2.0.0+cu118 Uses cuDNN 8.7 Also the default repo's for \"pip install torch\" only has the cu117 version. Thus you need to use the extra url thing as follows: pip3 install clean-fid numba numpy torch==2.0.0+cu118 torchvision --force-reinstall --extra-index-url https://download.pytorch.org/whl/cu118 Danger danger... If you let A1111 install your xformers it will downgrade your pytorch. I missed this when I first created this post because I always built xformers to install it on Linux. Thus I got an xformers compatible with torch 2.0. Either don't use xformers because sdp seems to work just as well or you'll need to get a xformers for torch 2.0 and don't ask me where to download it from. I don't know.", "score": 0.16666666666666666, "qid": 17, "rank": 6, "docid": "17-5"}, {"content": "If you have recently bought a new laptop with Windows 11 installed on it and
+</passage><passage file_path=src/webview/components/EditorContextMenuListener.tsx>
+import { useEffect } from 'react';
+import { useAppDispatch } from '../hooks';
+import { webviewToExtensionApi } from '../redux/webviewToExtensionApi';
+import { inputText } from '../redux/uiActions';
+
+
+</passage><passage file_path=src/webview/pages/data/login.ts>
+import { json, redirect } from 'react-router-dom';
+import { webviewToExtensionApi } from '../../redux/webviewToExtensionApi';
+import { store } from '../../redux/store';
+import Login from '../components/Login';
+import type { JsonType } from '../../routes/types';
+import type { ActionFunction } from '@remix-run/router';
+
+const action: ActionFunction = async ({ request }) => {
+  const { email, password } = Object.fromEntries<FormDataEntryValue>(await request.formData());
+
+  if (!!(email && typeof email !== 'string') || !!(password && typeof password !== 'string')) {
+    // should not happen
+    throw new Error('Unexpected type');
+  }
+
+  const result = await store.dispatch(webviewToExtensionApi.endpoints.login.initiate({ email, password }));
+  if ('error' in result) {
+    return json<JsonType<'login'>>({ login: result });
+  } else {
+    return redirect('/chat');
+  }
+};
+
+export default {
+  Component: Login,
+  action,
+
+</passage><passage file_path=src/webview/routes/types.ts>
+import type { ExtensionToWebviewMessage } from '../../types/webviewToExtensionTypes';
+import type { ExtensionApiEndpoint, webviewToExtensionApi } from '../redux/webviewToExtensionApi';
+import type { SerializedError } from '@reduxjs/toolkit';
+
+export interface DataOrError<T extends ExtensionApiEndpoint> {
+  data?: Partial<(typeof webviewToExtensionApi.endpoints)[T]['Types']['ResultType']>;
+  error?: ExtensionToWebviewMessage['error'] | SerializedError;
+}
+
+export type JsonType<T extends ExtensionApiEndpoint> = {
+  [endpoint in T]?: DataOrError<T>;
+
+</passage><passage file_path=src/webview/pages/components/FileTree.tsx>
+import { Checkbox, Accordion, AccordionItem, CheckboxGroup } from '@nextui-org/react';
+import { webviewToExtensionApi } from '../../redux/webviewToExtensionApi';
+import { store } from '../../redux/store';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { stringify } from 'querystring';
+import { FileTreeNode } from '../../../types/types';
+
+interface FileTreeProps {
+  node: FileTreeNode;
+  isRoot: boolean;
+  onCheckboxChange: (node: FileTreeNode, selected: boolean) => void;
+}
+
+
+</passage><passage file_path=src/webviewProvider/reactWebviewViewProvider.ts>
+	const handleIndexLocalDirectory: WebviewToExtensionMessageHandler = async ({ id }) => {
+		getMixPanel()?.track('Index External Source', {
+			distinct_id: legacyWebviewViewProvider.getMachineId(),
+			source: 'local',
+		});
+		await indexLocalDirectory(legacyWebviewViewProvider, easyCodeClient);
+		await postMessage({
+			id,
+			type: 'response',
+			data: {},
+		});
+	}
+
+	const handleDeleteDirectory: WebviewToExtensionMessageHandler<"delete-directory"> = async ({id, data}) => {
+		await deleteDirectory(data.selectedFolderPath);
+		await postMessage({
+			id,
+			type: 'response',
+			data: {}
+		})
+	}
+
+	const handleOpenPrimaryGitIgnoreFile: WebviewToExtensionMessageHandler = async ({ id }) => {
+		await openPrimaryGitIgnoreFile();
+		await postMessage({
+			id,
+			type: 'response',
+			data: {},
+		});
+	}
+	const handleIndexCodebase: WebviewToExtensionMessageHandler = async ({ id }) => {
+		await indexCodebase(true, legacyWebviewViewProvider, easyCodeClient);
+		await postMessage({
+			id,
+			type: 'response',
+			data: {},
+		});
+	};
+
+
+</passage><passage file_path=src/webviewProvider/reactWebviewViewProvider.ts>
+	const handleOpenSubscriptionExternalLink: WebviewToExtensionMessageHandler<"open-manage-subscription-external-link"> = async ( { id, data }) => {
+		legacyWebviewViewProvider.getMixPanel()?.track('Opened Manage Subscription Page', {
+			distinct_id: legacyWebviewViewProvider.getMachineId()
+		});
+
+		let user_email = data.user.userEmail;
+		const url = 'https://billing.stripe.com/p/login/cN216K64M47x6wo5kk?prefilled_email=' + user_email;
+		vscode.env.openExternal(vscode.Uri.parse(url));
+	}
+
+	const handleIsUserLoggedIn: WebviewToExtensionMessageHandler = async ({ id }) => {
+		const isLoggedIn = await easyCodeClient.isLoggedIn();
+		await postMessage({
+			id,
+			type: 'response',
+			data: { isLoggedIn },
+		});
+	};
+
+
+</passage><passage file_path=src/webview/pages/components/UpgradeModal.tsx>
+import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter} from '@nextui-org/react';
+import { useAppDispatch } from '../../hooks';
+import { webviewToExtensionApi } from '../../redux/webviewToExtensionApi';
+import { EasyCodeUser } from '../../../apis/extensionToServerApi';
+import { IoCardOutline, IoRocketOutline } from 'react-icons/io5';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { store } from '../../redux/store';
+
+interface UpgradeModalProps {
+  isOpen: boolean;
+  userProfile: EasyCodeUser;
+  onClose: () => void;
+}
+
+
+</passage><passage file_path=src/webview/pages/components/ChatLayout.tsx>
+  const handleClickOutside = (event:any) => {
+    //console.log("handling click");
+    if (selectRef.current && !selectRef.current.contains(event.target) && historyMenuButtonRef.current && !historyMenuButtonRef.current.contains(event.target)) {
+      console.log(historyMenuButtonRef);
+      setHistoryMenuOpen(false);
+    }
+  };
+
+  // Call scrollToRight after the first render
+  useEffect(() => {
+    console.log("messageHistory length: " + data?.messageHistory.length);
+    addTab().then(result => {
+      if ('data' in result){
+        let newTabId = result?.data.newTabId;
+        navigate(`${newTabId}`);
+      }
+    })
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
+
+
+
+  const addTab = async () => {
+    return await store.dispatch(webviewToExtensionApi.endpoints.addTab.initiate());
+  };
+
+
+</passage><passage file_path=src/webview/pages/data/chatLayout.ts>
+import { json } from 'react-router-dom';
+import { webviewToExtensionApi } from '../../redux/webviewToExtensionApi';
+import { store } from '../../redux/store';
+import ChatLayout from '../components/ChatLayout';
+import type { JsonType } from '../../routes/types';
+import type { LoaderFunction } from 'react-router-dom';
+
+const loader: LoaderFunction = async () => {
+  const messageListPromise = store.dispatch(webviewToExtensionApi.endpoints.getMessageHistoryList.initiate());
+  const result = await messageListPromise;
+  messageListPromise.unsubscribe();
+
+  const { data, error } = result;
+  return json<JsonType<'getMessageHistoryList'>>({ getMessageHistoryList: { data, error } });
+};
+
+export default {
+  Component: ChatLayout,
+  loader,
+
+</passage><passage file_path=src/webview/pages/components/ChatTab.tsx>
+  const handleAskWebChange = (event: any) => {
+    const selected: boolean = event.target.checked;
+    setIsAskWeb(selected);
+    if (selected){
+      setIsAskCodebase(!selected);
+    }
+    // Call the extensionApi here
+    //await store.dispatch(extensionApi.endpoints.yourEndpoint.initiate({ path: node.path, selected }));
+  };
+
+  //let model = store.dispatch(extensionApi.endpoints.getModel.initiate());
+
+
+  const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    let newSelection = e.target.value;
+    //console.log("newModel" + newSelection);
+    dispatch(webviewToExtensionApi.endpoints.setModel.initiate({model: newSelection}));
+    setModel(newSelection);
+  }
+
+  //console.log("isAskCodebase" + isAskCodebase);
+
+
+
+</passage><passage file_path=src/webview/pages/components/ChatTab.tsx>
+  const fixedMessage = useMemo(() => fixCodeBlocks(easyCodeChatMessage.content || ""), [easyCodeChatMessage.content]);
+  const handleCopy = useCallback((text: string) => {
+    dispatch(webviewToExtensionApi.endpoints.copyCode.initiate({code: text}));
+  }, []);
+  const handleInsert = useCallback((text: string) => {
+    dispatch(webviewToExtensionApi.endpoints.insertCode.initiate({code: text}));
+  }, []);
+  const handleDiff = useCallback((text: string) => {
+    dispatch(webviewToExtensionApi.endpoints.diffCode.initiate({code: text}));
+  }, []);
+
+  /*
+  useEffect(() => {
+    const renderedHTML = renderToString(
+      <ReactMarkdown
+        //remarkPlugins={[gfm]}
+        className='whitespace-pre-wrap'
+        children={fixedMessage}
+        components={{
+          p({node, ...props}) {
+            //setReachedFirstParagraph(true);
+            return <p {...props} className="mt-4 mb-4" />
+          },
+        }}
+      />
+    );
+    console.log(renderedHTML);
+  }, [fixedMessage]); */
+
+
+</passage><passage file_path=src/webview/pages/components/ChatTab.tsx>
+import { Button, Checkbox, Select, SelectItem, Textarea, Accordion, AccordionItem, CardBody, Card, ScrollShadow, Avatar, AvatarIcon, Selection, Popover, PopoverTrigger, PopoverContent, Tooltip} from '@nextui-org/react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FetcherWithComponents, useFetcher, useParams } from 'react-router-dom';
+import { webviewToExtensionApi, useGetMessagesQuery, useGetModelQuery } from '../../redux/webviewToExtensionApi';
+import type { EasyCodeChatMessage } from '../../../types/types';
+import { HoverTooltip } from './HoverToolTip';
+import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { AskCodebasePanel } from './AskCodebasePanel';
+import React from 'react';
+
+</passage><passage file_path=src/webviewProvider/Webview.tsx>
+export default function Webview({ context, webview }: WebviewProps) {
+    const iconPath = Uri.file(path.join(context.extensionPath, 'resources', 'old_extensionIcon.png'));
+    const iconUri = webview.asWebviewUri(iconPath);
+    const jsEntry = Uri.joinPath(context.extensionUri, 'dist', 'main.webview.js');
+    const jsVendor = Uri.joinPath(context.extensionUri, 'dist', 'vendor.webview.js');
+    const webpackRuntime = Uri.joinPath(context.extensionUri, 'dist', 'runtime.webview.js');
+    const stylesheet = Uri.joinPath(context.extensionUri, 'dist', 'main.webview.css');
+
+
+</passage><passage file_path=src/webview/pages/components/ErrorModal.tsx>
+import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter} from '@nextui-org/react';
+import { useAppDispatch } from '../../hooks';
+import { webviewToExtensionApi } from '../../redux/webviewToExtensionApi';
+import { EasyCodeUser } from '../../../apis/extensionToServerApi';
+import { IoCardOutline, IoRocketOutline } from 'react-icons/io5';
+
+interface ErrorModalProps {
+  isOpen: boolean;
+  errorMessage: string;
+  onClose: () => void;
+}
+
+
+</passage><passage file_path=src/webview/pages/components/AskCodebasePanel.tsx>
+import { useEffect, useState } from 'react';
+import { webviewToExtensionApi, useGetAllDirectoriesFileTreeQuery } from '../../redux/webviewToExtensionApi';
+import { FileTree } from './FileTree';
+import { DirectoryData, FileTreeNode } from '../../../types/types';
+import { store } from '../../redux/store';
+import { UilTrash } from '@iconscout/react-unicons'
+import { UilMinusCircle } from '@iconscout/react-unicons'
+import { UilPlusCircle } from '@iconscout/react-unicons'
+import { IoAddCircleOutline, IoRemoveCircleOutline, IoTrashOutline } from 'react-icons/io5';
+
+ // This function will recursively set the selected property of each node based on its children
+
+</passage><passage file_path=src/webview/pages/components/ChatLayout.tsx>
+  const deleteTab = (tabIdToDelete: string) => {
+    store.dispatch(webviewToExtensionApi.endpoints.deleteTab.initiate({tabIdToDelete})).then(e => {
+      let newTabId = data?.messageHistory[data?.messageHistory.length-1].id;
+      navigate(`${newTabId}`);
+      }
+    )
+  };
+
+
+</passage><passage file_path=src/webview/pages/data/chatTab.ts>
+const action: ActionFunction = async ({ request }) => {
+  const { tabId, messageIndex, content, isAskCodebase, isAskWeb, model } = Object.fromEntries<FormDataEntryValue>(await request.formData());
+  if (!!(tabId && typeof tabId !== 'string') || !!(messageIndex && typeof messageIndex !== 'string') || !!(content && typeof content !== 'string') || !!(isAskCodebase && typeof isAskCodebase !== 'string') || !!(isAskWeb && typeof isAskWeb !== 'string')) {
+    // should not happen
+    throw new Error('Unexpected type');
+  }
+
+  let response = await store.dispatch(webviewToExtensionApi.endpoints.sendMessage.initiate({ tabId: tabId, messageIndex: parseInt(messageIndex), content: content, isAskCodebase: isAskCodebase === 'true', isAskWeb: isAskWeb === 'true', model: typeof model === 'string' ? model : null}));
+  if ('error' in response) {
+    store.dispatch(errorModal.actions.showError(response.error.message || 'No Error Message'));
+  }
+  store.dispatch(webviewToExtensionApi.endpoints.getMessageHistoryList.initiate(undefined, {forceRefetch: true}));
+  return null;
+
+</passage><passage file_path=src/webview/pages/data/layout.ts>
+import { QueryStatus } from '@reduxjs/toolkit/query';
+import { json, redirect } from 'react-router-dom';
+import { webviewToExtensionApi } from '../../redux/webviewToExtensionApi';
+import { store } from '../../redux/store';
+import Layout from '../components/Layout';
+import type { JsonType } from '../../routes/types';
+import type { LoaderFunction , ShouldRevalidateFunction } from 'react-router-dom';
+
+
+</passage><passage file_path=src/types/webviewToExtensionTypes.ts>
+] as const;
+
+const EXTENSION_TO_WEBVIEW_MESSAGES = [
+  {
+    type: '' as 'response' | 'response-streaming',
+    data: {} as WebviewChannelMessage['data'],
+  },
+  {
+    type: '' as 'response' | 'response-streaming',
+    error: {} as WebviewChannelMessage['error'],
+  },
+  {
+    type: 'new-tab',
+    data: {} as WebviewChannelMessage['data'],
+  },
+  {
+    type: 'contextMenuOptionSelected',
+    data: {} as {
+      option?: string | null,
+      input?: string | null,
+      selection?: string | null,
+    },
+  },
+] as const;
+
+export type WebviewToExtensionMessage = WebviewChannelMessage & typeof WEBVIEW_TO_EXTENSION_MESSAGES[number];
+export type ExtensionToWebviewMessage = WebviewChannelMessage & typeof EXTENSION_TO_WEBVIEW_MESSAGES[number];
+
+</passage><passage file_path=src/webview/pages/data/tryWithoutAccount.ts>
+import { json, redirect } from 'react-router-dom';
+import { webviewToExtensionApi } from '../../redux/webviewToExtensionApi';
+import { store } from '../../redux/store';
+import TryWithoutAccount from '../components/TryWithoutAccount';
+import type { JsonType } from '../../routes/types';
+import type { ActionFunction } from '@remix-run/router';
+
+const action: ActionFunction = async () => {
+  const result = await store.dispatch(webviewToExtensionApi.endpoints.loginWithPlaceholder.initiate());
+  if ('error' in result) {
+    return json<JsonType<'loginWithPlaceholder'>>({ loginWithPlaceholder: result });
+  } else {
+    return redirect('/chat');
+  }
+};
+
+export default {
+  Component: TryWithoutAccount,
+  action,
+
+</passage><passage file_path=src/webview/redux/uiActions.ts>
+// src/webview/redux/uiActions.ts
+
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+interface InputTextState {
+    text: string;
+    tabId: string | null;
+    isLoading: boolean;
+    error: any;
+}
+
+interface InputTextPayload {
+    text: string;
+    tabId: string;
+}
+
+const initialInputTextState: InputTextState = {
+    text: '',
+    tabId: null,
+    isLoading: false,
+    error: null,
+};
+
+const inputTextSlice = createSlice({
+    name: 'inputText',
+    initialState: initialInputTextState,
+    reducers: {
+      setInputText: (state, action: PayloadAction<InputTextPayload>) => {
+        state.text = action.payload.text;
+        state.tabId = action.payload.tabId;
+      },
+      // other reducers...
+    },
+});
+
+const askCodebaseCheckboxSlice = createSlice({
+  name: 'askCodebaseCheckbox',
+  initialState: false,
+  reducers: {
+    setAskCodebaseCheckbox: (state, action: PayloadAction<boolean>) => {
+      state = action.payload;
+    },
+    // other reducers...
+  },
+});
+
+
+</passage><passage file_path=src/webview/components/AppNav.tsx>
+import { Avatar, Button, Link, Navbar, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuItem, NavbarMenuToggle } from '@nextui-org/react';
+import { NavLink, NavigateFunction, useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppRouteLoaderData, useAppSelector } from '../hooks';
+import { layout } from '../pages';
+import { CommandLink, ExternalLink } from './';
+import { webviewToExtensionApi } from '../redux/webviewToExtensionApi';
+import { store } from '../redux/store';
+import type { ComponentProps } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import UpgradeModal from '../pages/components/UpgradeModal';
+import { HoverTooltip } from '../pages/components/HoverToolTip';
+import { ChatHistoryMenuItemConsumer, ChatHistoryMenuItemProvider } from './ChatHistoryMenuItemContext';
+
+import AccountModal from '../pages/components/AccountModal';
+import { EasyCodeUser } from '../../apis/extensionToServerApi';
+
+</passage><passage file_path=src/webview/pages/data/forgotPassword.ts>
+import { json } from 'react-router-dom';
+import { webviewToExtensionApi } from '../../redux/webviewToExtensionApi';
+import { store } from '../../redux/store';
+import type { JsonType } from '../../routes/types';
+import ForgotPassword from '../components/ForgotPassword';
+import type { ActionFunction } from '@remix-run/router';
+
+const action: ActionFunction = async ({ request }) => {
+  const { email } = Object.fromEntries<FormDataEntryValue>(await request.formData());
+
+  if (!!(email && typeof email !== 'string')) {
+    // should not happen
+    throw new Error('Unexpected type');
+  }
+
+  const result = await store.dispatch(webviewToExtensionApi.endpoints.forgotPassword.initiate({ email }));
+  console.log(result);
+  if ('error' in result) {
+    return json<JsonType<'forgotPassword'>>({ forgotPassword: result });
+  } else {
+    return json<JsonType<'forgotPassword'>>({ forgotPassword: result });
+  }
+};
+
+export default {
+  Component: ForgotPassword,
+  action,
+
+</passage><passage file_path=src/types/webviewToExtensionTypes.ts>
+import { EasyCodeUser } from "../apis/extensionToServerApi";
+import { FileTreeNode } from "./types";
+
+interface WebviewChannelMessage {
+  readonly type: string;
+  readonly id?: string;
+  readonly data?: Readonly<Record<string, unknown>>;
+  readonly error?: {
+    readonly name?: string | null;
+    readonly message?: string | null;
+    readonly [key: string]: unknown;
+  };
+}
+
+
+</passage><passage file_path=src/types/webviewToExtensionTypes.ts>
+  {
+    type: 'diff-code',
+    data: {} as {
+      code: string,
+    },
+  },
+  {
+    type: 'abort-all-streams'
+  },
+  {
+    type: 'send-message',
+    data: {} as {
+      tabId?: string | null,
+      messageIndex?: number | null,
+      content?: string | null,
+      isAskCodebase?: boolean | null,
+      isAskWeb?: boolean | null,
+      model?: string | null,
+    },
+  },
+
+</passage><passage file_path=src/webview/redux/uiActions.ts>
+const askWebCheckboxSlice = createSlice({
+  name: 'askWebCheckbox',
+  initialState: false,
+  reducers: {
+    setAskCodebaseCheckbox: (state, action: PayloadAction<boolean>) => {
+      state = action.payload;
+    },
+    // other reducers...
+  },
+});
+
+// Export as an object
+export const inputText = {
+  reducer: inputTextSlice.reducer,
+  actions: inputTextSlice.actions,
+};
+
+// Export as an object
+export const askCodebaseChecked = {
+  reducer: askCodebaseCheckboxSlice.reducer,
+  actions: askCodebaseCheckboxSlice.actions,
+};
+
+// Export as an object
+export const askWebChecked = {
+  reducer: askWebCheckboxSlice.reducer,
+  actions: askWebCheckboxSlice.actions,
+
+</passage><passage file_path=easycode/rank_gpt/NovelEval/data.json>
+however, provides only limited visualization. TensorFlow also beats PyTorch in deploying trained models to production, thanks to the TensorFlow Serving framework. PyTorch offers no such framework, so developers need to use Django or Flask as a back-end server. In the area of data parallelism, PyTorch gains optimal performance by relying on native support for asynchronous execution through Python. However, with TensorFlow, you must manually code and optimize every operation run on a specific device to allow distributed training. In summary, you can replicate everything from PyTorch in TensorFlow; you just need to work harder at it. If you\u2019re just starting to explore deep learning, you should learn PyTorch first due to its popularity in the research community. However, if you\u2019re familiar with machine learning and deep learning and focused on getting a job in the industry as soon as possible, learn TensorFlow first.", "score": 0.125, "qid": 17, "rank": 8, "docid": "17-7"}, {"content": "More Pythonic
+</passage><passage file_path=src/webview/pages/components/AskCodebasePanel.tsx>
+    const handleDeleteDirectory = (event:any, selectedFolderPath: string) => {
+      store.dispatch(webviewToExtensionApi.endpoints.deleteDirectory.initiate({selectedFolderPath}));
+    }
+    const handleAddDirectory = (event: any) => {
+      store.dispatch(webviewToExtensionApi.endpoints.indexLocalDirectory.initiate());
+    }
+
+    const handleExcludeDirectories = (event: any) => {
+      store.dispatch(webviewToExtensionApi.endpoints.openPrimaryGitIgnoreFile.initiate());
+    }
+
+
+</passage><passage file_path=src/webview/pages/data/signup.ts>
+const action: ActionFunction = async ({ request }) => {
+  const { email, password, passwordConfirm, role } = Object.fromEntries<FormDataEntryValue>(await request.formData());
+
+  if (!!(email && typeof email !== 'string') || !!(password && typeof password !== 'string') || !!(passwordConfirm && typeof passwordConfirm !== 'string') || !!(role && typeof role !== 'string')) {
+    // should not happen
+    throw new Error('Unexpected type');
+  }
+
+  if (password !== passwordConfirm) {
+    console.log(password);
+    console.log(passwordConfirm);
+    console.log(role);
+    return json<JsonType<'signup'>>({ signup: { error: {message: 'Passwords do not match!'}} });
+  }
+
+  const result = await store.dispatch(webviewToExtensionApi.endpoints.signup.initiate({ email, password, role }));
+  if ('error' in result) {
+    return json<JsonType<'signup'>>({ signup: result });
+  } else {
+    return redirect('/chat');
+  }
+};
+
+export default {
+  Component: Signup,
+  action,
+
+</passage><passage file_path=src/webview/components/EditorContextMenuListener.tsx>
+    const messageHandler = (event: { data: any; }) => {
+      const message = event.data; // The JSON data our extension sent
+      switch (message.type) {
+        case 'contextMenuOptionSelected':
+          console.log(message.data);
+          if (message.data.option == 'ask'){
+          // Dispatch an action to extensionApi
+          //console.log(message);
+          //console.log("dispatching setInputText Action");
+            dispatch(webviewToExtensionApi.endpoints.addTab.initiate()).then(result => {
+              if ('data' in result){
+                let newTabId = result?.data.newTabId;
+                dispatch(inputText.actions.setInputText({text: message.data.selectedText + '\n\n' + message.data.input, tabId: newTabId}));
+              }
+            })
+          } else if (message.data.option == 'index-codebase'){
+            dispatch(webviewToExtensionApi.endpoints.indexCodebase.initiate())
+          } else if (message.data.option == 'refresh-file-tree'){
+            dispatch(webviewToExtensionApi.util.invalidateTags(['FileTree']));
+          }
+          break;
+      }
+
+</passage><passage file_path=src/webview/pages/components/UpgradeModal.tsx>
+export default function UpgradeModal({ isOpen, userProfile, onClose }: UpgradeModalProps) {
+  let dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  function handleLogout(navigate: NavigateFunction) {
+    store.dispatch(webviewToExtensionApi.endpoints.logout.initiate());
+    navigate('/auth/signup');
+  }
+
+
+</passage><passage file_path=easycode/rank_gpt/NovelEval/data.json>
+| @koreanairworld/Instagram | @koreanairworld/Instagram Although BLACKPINK are getting the plane at a discounted rate through the sponsorship, fans were astounded by how much it typically costs to fly in that plane. To use the plane in the first place, users pay for a \u20a9700 million KRW (about $539,000 USD) yearly membership. Members are then allowed to use the plane for 30 hours for \u20a92.90 million KRW (about $2,230 USD) domestically and \u20a94.80 million KRW (about $3,700 USD) per hour internationally. After 30 hours, users must renew their membership for \u20a9700 million KRW (about $539,000 USD) for another 30 hours.", "score": 0.05, "qid": 8, "rank": 20, "docid": "8-19"}]}, {"query": "Where did the G7 Summit 2023 take place?", "hits": [{"content": "The Group of 7 (G7) Summit is an international forum held annually for the leaders of the G7 member States of France, the US, the UK, Germany, Japan, Italy, and Canada. Represented jointly by the President of the European Council and the President of
+</passage><passage file_path=src/webview/redux/error.ts>
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+const errorState = {
+  error: false,
+  message: ''
+};
+
+const errorModalSlice = createSlice({
+  name: 'errorModal',
+  initialState: errorState,
+  reducers: {
+    showError: (state, action: PayloadAction<string>) => {
+      state.error = true;
+      state.message = action.payload;
+      return state;
+    },
+    clearError: (state) => {
+      state.error = false;
+      state.message = '';
+      return state;
+    },
+    // other reducers...
+  },
+});
+
+// Export as an object
+export const errorModal = {
+  reducer: errorModalSlice.reducer,
+  actions: errorModalSlice.actions,
+
+</passage><passage file_path=src/webviewProvider/Webview.tsx>
+import path from 'path';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { Uri } from 'vscode';
+
+import type { Webview, ExtensionContext } from 'vscode';
+
+export interface WebviewProps {
+    context: ExtensionContext,
+    webview: Webview,
+}
+
+
+</passage><passage file_path=README.md>
+
+
+1. Code-related queries: ChatGPT can help answer questions related to coding and programming languages. A developer can ask questions about syntax, debugging, and other issues they might encounter while writing code.
+2. Documentation assistance: Developers often need to refer to documentation to understand how to use certain libraries or frameworks. ChatGPT can help locate relevant documentation and provide guidance on how to use it effectively.
+3. Collaboration support: Developers often need to collaborate with other team members on projects. ChatGPT can assist with scheduling meetings, managing tasks, and coordinating workflow.
+4. Code generation: ChatGPT can generate code snippets based on prompts and examples provided by the developer. This can save time when writing repetitive code or working with complex algorithms
+</passage><passage file_path=src/webview/index.tsx>
+root.render(
+  <StrictMode>
+    <SentryReact.ErrorBoundary fallback={<p>An error has occurred</p>}>
+      <ReduxProvider store={store}>
+        <NextUIProvider>
+          <div className="flex flex-col h-screen w-screen text-foreground bg-background overflow-x-hidden">
+            <EditorContextMenuListener />
+            <RouterProvider router={router} future={{ v7_startTransition: true }} fallbackElement={<Spinner label="Loading" className="m-auto" />} />
+          </div>
+        </NextUIProvider>
+      </ReduxProvider>
+    </SentryReact.ErrorBoundary>
+  </StrictMode>,
+
+</passage><passage file_path=src/webview/index.tsx>
+import { NextUIProvider, Spinner } from '@nextui-org/react';
+
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { Provider as ReduxProvider } from 'react-redux';
+import { createHashRouter, RouterProvider } from 'react-router-dom';
+import { store } from './redux/store';
+import { routes } from './routes';
+import { EditorContextMenuListener } from './components/EditorContextMenuListener';
+import * as SentryReact from "@sentry/react"
+import {
+  initializeReactWebviewSentry,
+} from '../sentry/react-webview-telemetry';
+
+import './css/index.css';
+
+initializeReactWebviewSentry();
+
+const rootElement = document.getElementById('root') as HTMLDivElement;
+
+
+</passage><passage file_path=src/webview/vscode.ts>
+import type { ValidWebviewMessage } from '../types/webviewToExtensionTypes';
+import type { WebviewApi } from 'vscode-webview';
+
+const vscode: WebviewApi<never> = acquireVsCodeApi();
+
+export interface AppWebviewApi {
+  postMessage(message: ValidWebviewMessage): void;
+}
+
+export default {
+  postMessage(message) {
+    vscode.postMessage(message);
+  },
+
+</passage><passage file_path=src/webview/components/AppNav.tsx>
+function UnauthenticatedNavbar() {
+  return (
+    <>
+      <NavbarContent justify="start" className="flex-wrap gap-y-0">
+        <NavBarNavLink to="/auth/try">
+          Try Without Account
+        </NavBarNavLink>
+        <NavBarNavLink to="/auth/signup">
+          Sign Up
+        </NavBarNavLink>
+        <NavBarNavLink to="/auth/login">
+          Login
+        </NavBarNavLink>
+        <NavBarNavLink to="/auth/forgot-password">
+          Forgot Password
+        </NavBarNavLink>
+      </NavbarContent>
+    </>
+  );
+}
+
+function handleLogoutAndSignUp(navigate: NavigateFunction) {
+  store.dispatch(webviewToExtensionApi.endpoints.logout.initiate());
+  navigate('/auth/signup');
+}
+
+function handleLogout(navigate: NavigateFunction) {
+  store.dispatch(webviewToExtensionApi.endpoints.logout.initiate());
+  navigate('/auth/login');
+}
+
+
+</passage><passage file_path=src/webview/pages/components/UpgradeModal.tsx>
+              {(userProfile.subscribed || userProfile.subscribedCodebase) &&
+              <>
+                <p>
+                  Enter the billing portal to manage or change your subscription
+                </p>
+                <Button radius='sm' color='primary' variant='shadow' onClick={(e) => dispatch(webviewToExtensionApi.endpoints.openManageSubscriptionExternalLink.initiate({user: userProfile}))}>
+                  <IoCardOutline className="w-6 h-6" />Manage Subscription
+                </Button>
+              </>
+              }
+
+</passage><passage file_path=src/webviewProvider/Webview.tsx>
+}
+
+export const renderWebview = (params: WebviewProps) => {
+    // use static markup because vscode modifies the html
+    return renderToStaticMarkup(<Webview {...params} />);
+
+</passage><passage file_path=src/modules/indexCodebase.ts>
+import type { ExtensionToWebviewMessage, ValidWebviewMessage, WebviewToExtensionMessage } from '../types/webviewToExtensionTypes';
+import type { AuthInfo, CodeEvalHandle, DirectoryData, EasyCodeChatMessage, ExtensionSettings, FileTreeNode, ReferenceMapping } from '../types/types';
+import { last, removeMessageHistoryAfterIndex } from '../helpers/utils';
+import { calcMaxAvailableTokens, countMessageHistoryTokens, countMessageTokens } from '../helpers/tokenCounters';
+import { Settings } from '../config/settings';
+import { LegacyWebviewViewProvider } from '../webviewProvider/legacyWebviewViewProvider';
+
+// Define your custom format
+
+</passage><passage file_path=src/webview/pages/data/layout.ts>
+const loader: LoaderFunction = async ({ request }) => {
+  const isLoggedInPromise = store.dispatch(webviewToExtensionApi.endpoints.isLoggedIn.initiate(undefined, {
+    forceRefetch: true,
+  }));
+  const { data: { isLoggedIn = false } = {} } = await isLoggedInPromise;
+  isLoggedInPromise.unsubscribe();
+
+  if (isLoggedIn && new URL(request.url).pathname.startsWith('/auth')) {
+    return redirect('/chat');
+  }
+
+  if (!isLoggedIn && !new URL(request.url).pathname.startsWith('/auth')) {
+    return redirect('/auth');
+  }
+
+  // fetch profile to confirm access
+  if (isLoggedIn) {
+    const userProfilePromise = store.dispatch(webviewToExtensionApi.endpoints.getUserProfile.initiate());
+    const profile = await userProfilePromise;
+    userProfilePromise.unsubscribe();
+
+    if (profile.status === QueryStatus.rejected || !profile.data?.user) {
+      // TODO: trigger logout
+      return redirect('/auth');
+    }
+
+    return json<JsonType<'isLoggedIn' | 'getUserProfile'>>({
+      isLoggedIn: { data: { isLoggedIn } },
+      getUserProfile: { data: profile.data },
+    });
+  }
+
+
+</passage><passage file_path=src/webview/components/AppNav.tsx>
+  const handleOpenAccountModal = async () => {
+    const updatedUserProfile = await dispatch(webviewToExtensionApi.endpoints.getUserProfile.initiate(undefined, {forceRefetch: true}));
+    setUserProfile(updatedUserProfile?.data?.user as EasyCodeUser);
+    console.log(updatedUserProfile?.data?.user as EasyCodeUser);
+    setIsAccountModalOpen(true);
+  }
+
+
+</passage><passage file_path=src/webview/index.tsx>
+const setDark = () => {
+  // next-ui doesn't recognize class names other than 'dark'
+  // translate vscode dataset values to dark
+  // vscode-dark or vscode-high-contrast => dark mode
+  // vscode-light or vscode-high-contrast-light => light mode
+  const vscodeThemeKind = document.body.dataset.vscodeThemeKind;
+  console.log("THEME KIND: " + document.body.dataset.vscodeThemeKind);
+  rootElement.classList.toggle('dark', !!(vscodeThemeKind && ['vscode-dark', 'vscode-high-contrast'].includes(vscodeThemeKind)));
+};
+setDark();
+
+new MutationObserver(() => {
+  setDark();
+}).observe(document.body, { attributeFilter: ['data-vscode-theme-kind'], attributes: true });
+
+const router = createHashRouter(routes, {
+  future: {
+    v7_normalizeFormMethod: true,
+  },
+});
+
+const root = createRoot(rootElement);
+
+</passage><passage file_path=vsc-extension-quickstart.md>
+# Welcome to your VS Code Extension
+
+## What's in the folder
+
+* This folder contains all of the files necessary for your extension.
+* `package.json` - this is the manifest file in which you declare your extension and command.
+  * The sample plugin registers a command and defines its title and command name. With this information VS Code can show the command in the command palette. It doesn’t yet need to load the plugin.
+* `src/extension.ts` - this is the main file where you will provide the implementation of your command.
+  * The file exports one function, `activate`, which is called the very first time your extension is activated (in this case by executing the command). Inside the `activate` function we call `registerCommand`.
+  * We pass the function containing the implementation of the command as the second parameter to `registerCommand`.
+
+## Setup
+
+* install the recommended extensions (amodio.tsl-problem-matcher and dbaeumer.vscode-eslint)
+
+
+## Get up and running straight away
+
+
+</passage><passage file_path=easycode/tasks.py>
+    for chunk in openai.ChatCompletion.create(
+        model=model,
+        messages=[
+                {"role": "system", "content": "You are a pro software developer. Given a description of a codebase, list the relevant files that need to be looked at to answer a question."},
+                {"role": "user", "content": codebase_summary + "Based on the codebase above, list the relevant files that will be needed in order to " + query}
+            ],
+        temperature=0,
+        stream=True,
+    ):
+
+</passage><passage file_path=package.json>
+    "configuration": {
+      "title": "ChatGPT - EasyCode",
+      "type": "object",
+      "properties": {
+        "easycode.model": {
+          "type": "string",
+          "enum": [
+            "gpt-3.5-turbo",
+            "gpt-3.5-turbo-16k",
+            "gpt-4-1106-preview",
+            "gpt-4",
+            "claude-instant-1"
+          ],
+          "default": "gpt-4",
+          "description": "Which ChatGPT model to use",
+          "order": 0
+        },
+        "easycode.maxTokens": {
+          "type": "number",
+          "maximum": 2000,
+          "default": 1024,
+          "description": "Maximum tokens to query the AI",
+          "order": 1
+        },
+        "easycode.temperature": {
+          "type": "number",
+          "default": 0,
+          "description": "Temperature to use for AI (0 is conservative and 1 is creative)",
+          "order": 2
+        },
+        "easycode.copyOnClick": {
+          "type": "boolean",
+          "default": true,
+          "description": "Copy the code from a codeblock into clipboard when you click on it",
+          "order": 3
+        },
+
+</passage><passage file_path=src/webview/pages/components/AskCodebasePanel.tsx>
+    const handleCheckboxChange = async (node: FileTreeNode, selectedFolderPath: string, isProjectRoot: boolean, selected: boolean) => {
+
+      console.log("handleCheckboxChange");
+      if (data){
+        store.dispatch(webviewToExtensionApi.endpoints.selectOrUnselectNode.initiate({fileNode: node, selected: selected, selectedFolderPath: selectedFolderPath, isProjectRoot: isProjectRoot}));
+      }
+      setAllDirectoryData(prevDirectoryDatas => {
+        if (!prevDirectoryDatas) return prevDirectoryDatas;
+        return prevDirectoryDatas.map((prevDirectoryData) => {
+          if (prevDirectoryData.selectedFolderPath == selectedFolderPath){
+            prevDirectoryData.fileTree[0] = updateSelectedNodeAndChildren(prevDirectoryData.fileTree[0], node.path, selected);
+          }
+          return prevDirectoryData;
+        });
+      });
+    };
+    //let fileTree = data?.fileTree[0];
+
+</passage><passage file_path=easycode/tasks.py>
+        c.perform()
+    # When you need the result of the function, you can call future.result().
+    # This will block until the function has finished executing.
+    
+    # NOTE THAT THIS UNCOMMENTING THIS WILL WIPE THE VECTOR DB FOR EVERYONE SINCE ITS CONNECTED TO PROD
+    '''
+    qd_client.recreate_collection(
+        collection_name="file_summary_embedding",
+        vectors_config=VectorParams(size=1536, distance=Distance.DOT),
+        optimizers_config=models.OptimizersConfigDiff(memmap_threshold=20000),
+        hnsw_config=models.HnswConfigDiff(on_disk=True)
+    )
+    '''
+    
+    updated_file_summaries = future.result()
+
+    updated_file_summary_map = {}
+    for i in range(len(same_files)):
+        updated_file_summary_map[same_files[i]['file_path']] = '<NO CHANGE>'
+    
+    file_summary_content_hashes = []
+    file_summary_content = []
+    new_file_summary_metadatas = []
+    file_summaries_to_embed = []
+
+</passage><passage file_path=README.md>
+### AI that *understands your codebase*.
+
+<img src="https://storage.googleapis.com/easycode-assets/askCodebase.gif" width="80%">
+
+### ChatGPT whenever you need it.
+
+<img src="https://storage.googleapis.com/easycode-assets/askGPT.gif" width="80%">
+
+### Autocomplete to boost productivity.
+
+<img src="https://storage.googleapis.com/easycode-assets/autocomplete.gif" width="80%">
+
+## Getting Started - EasyCode
+
+### **Ask Codebase**
+- Check “Ask Codebase”, this will start indexing your codebase. <span style="color:red">Wait for indexing to finish</span>, as indicated by the notification on the bottom right.
+- De-select the folders/files that are not relevant to what you are interested in.
+
+<img src="https://storage.googleapis.com/easycode-assets/codebase-indexing.png" width="80%">
+
+**Generate code based on your existing codebase**
+- “What are the changes needed to do (insert feature) ?”
+- “How do I implement (inser idea)?”
+
+**Understand any codebase**
+
+</passage><passage file_path=vsc-extension-quickstart.md>
+* Press `F5` to open a new window with your extension loaded.
+* Run your command from the command palette by pressing (`Ctrl+Shift+P` or `Cmd+Shift+P` on Mac) and typing `Hello World`.
+* Set breakpoints in your code inside `src/extension.ts` to debug your extension.
+* Find output from your extension in the debug console.
+
+## Make changes
+
+* You can relaunch the extension from the debug toolbar after changing code in `src/extension.ts`.
+* You can also reload (`Ctrl+R` or `Cmd+R` on Mac) the VS Code window with your extension to load your changes.
+
+
+## Explore the API
+
+* You can open the full set of our API when you open the file `node_modules/@types/vscode/index.d.ts`.
+
+## Run tests
+
+
+</passage><passage file_path=src/extension.ts>
+	const legacyWebviewViewProvider = new LegacyWebviewViewProvider(context.extensionUri, context);
+
+	// Get the API session token from the extension's configuration
+	const config = vscode.workspace.getConfiguration('easycode');
+	// Put configuration settings into the provider
+
+	Settings.setSettings({
+		selectedInsideCodeblock: config.get('selectedInsideCodeblock') || false,
+		copyOnClick: config.get('copyOnClick') || false,
+		maxTokens: config.get('maxTokens') || 500,
+		temperature: config.get('temperature') || 0,
+		model: config.get('model') || 'gpt-3.5-turbo',
+		userEmail: config.get('userEmail') || '',
+		openAIApiKey: config.get('openAI ApiKey') || '',
+		inlineCompletion: config.get('inlineCompletion') || true,
+		dataCollection: config.get('dataCollection') || true,
+		useOwnApiKey: config.get('useOwnApiKey') || false,
+		usePromptAssistant: config.get('usePromptAssistant') || false,
+		useActiveViewContext: config.get('useActiveViewContext') || false
+	});
+
+
+</passage><passage file_path=src/extension.ts>
+		} else if (event.affectsConfiguration('easycode.useOwnApiKey')) {
+
+			const config = vscode.workspace.getConfiguration('easycode');
+			let useOwnApiKey = config.get('useOwnApiKey') as boolean;
+			Settings.setSettings({ useOwnApiKey: useOwnApiKey || false });
+			legacyWebviewViewProvider.getWebView()?.webview.postMessage({ type: 'updateUseOwnApiKeyCheckBox', value: useOwnApiKey});
+
+</passage><passage file_path=CHANGELOG.md>
+- [EXPERIMENTAL] Added a prompt assistant to help guide vague prompts into specific ones
+- Added prompt ideas to new tabs that are opened
+
+## [0.9.7]
+
+- Hotfix for gpt-4 giving an ask codebase error even when ask codebase is not checked
+
+## [0.9.6]
+
+- Hotfix for chat not working due to no api key set
+
+## [0.9.5]
+
+- Code lens is now default turned off (floating actions above code functions)
+- Fixed bug where using own API key worked even without an API key
+
+## [0.9.4]
+
+- Added the ability to index github repositories
+- Fixed a bug with not being able to use GPT-4 when using own API key
+- Indexing codebase will now show a separate progress meter for each directory
+- Indexing codebase will now index each directory one after the other
+- Fixed bug with adding extra directories not working on linux and windows
+
+## [0.9.3]
+
+- hotfixed a bug that causes follow-up conversations to not work
+
+## [0.9.2]
+
+
+</passage><passage file_path=src/apis/extensionToServerApi.ts>
+				if (data.text === 'NOGPT4TOKENSLEFT') {
+          reject('You have no more GPT-4 credits left. Please upgrade your plan or switch to GPT-3 in the settings.')
+          return;
+				}
+
+</passage><passage file_path=src/webview/pages/data/chatTab.ts>
+};
+
+export default {
+  Component: ChatTab,
+  loader,
+  action,
+
+</passage><passage file_path=src/extension.ts>
+			if (useOwnApiKey){
+				legacyWebviewViewProvider.getWebView()?.webview.postMessage({ type: 'setRemainingTokensToUserApiKey', value: 'Using Your API Key'});
+			} else {
+				await legacyWebviewViewProvider.easycodeAPI().get(easycode_url + '/user/')
+				.then((response :any) => {
+					//console.log(response.data);
+					legacyWebviewViewProvider.getWebView()?.webview.postMessage({ type: 'updateRemainingTokens', value: Math.max(0, response.data.gpt_4_tokens_available - response.data.gpt_4_tokens_used)});
+					if (response.data.subscribed == true){
+						legacyWebviewViewProvider.getWebView()?.webview.postMessage({ type: 'setRemainingTokensToUnlimited'});
+					} else {
+						legacyWebviewViewProvider.getWebView()?.webview.postMessage({ type: 'setRemainingTokensToRateLimited'});
+					}
+				}).catch((error: any) => {
+					console.log(error);
+				});
+			}
+
+</passage><passage file_path=src/apis/extensionToServerApi.ts>
+  client.interceptors.response.use(async (response) => {
+    // If the response is successful, just return it
+      return response;
+
+</passage><passage file_path=package.json>
+        "easycode.dataCollection": {
+          "type": "boolean",
+          "default": true,
+          "description": "Allow the extension to collect data",
+          "order": 11
+        },
+        "easycode.openAI ApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Your OpenAI Api Key",
+          "order": 12
+        },
+        "easycode.useOwnApiKey": {
+          "type": "boolean",
+          "default": false,
+          "description": "Use Your Own OpenAI Api Key",
+          "order": 13
+        },
+        "easycode.usePromptAssistant": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use EasyCode Prompt Assistant",
+          "order": 14
+        },
+        "easycode.useActiveViewContext": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically use code context from the current active editor view",
+          "order": 15
+        }
+
+</passage><passage file_path=README.md>
+
+
+In summary, while ChatGPT can be a useful tool for software development work, it is important to be aware of its limitations and to use it in conjunction with human expertise and judgement. It is important to weigh the benefits and risks of using ChatGPT in each particular situation, and to exercise caution when relying on its responses.
+
+### In Summary
+</passage><passage file_path=CHANGELOG.md>
+- Added options in the chat window to select AI model and to use own open ai key
+- Added quick capture feature to context menu
+- Added a floating quick action above code functions that explains what the function does
+- Added buttons to allow users to upvote/downvote conversations
+    - This helps us determine what is helpful to users
+- Codebase indexing has been revamped
+    - users can select what files are included when asking codebase
+        - By default, all project files are included
+        - This helps narrow the AI's answers so it uses the contexts you care about
+    - speed is vastly improved and supports projects of up to 2000 files
+    - codebase indexing no longer requires language packs to be installed
+    - more file formats are now supported, including json, md, yaml
+- Data collection is now Opt-out
+- Bug Fixes:
+    - Fixed an issue where conversation errors out due to context length exceeding the models limits when using ask codebase
+
+## [0.8.8]
+
+- Fixed a bug with ask codebase erroring out
+
+
+</passage><passage file_path=src/helpers/chatHistory.ts>
+export async function truncateFromTop(chatHistory: EasyCodeChatMessage[], fullLength: number, targetLength: number) {
+    //We need to do some smart truncating
+    const messageHistory = chatHistory;
+    if (fullLength <= targetLength) {
+        return [...messageHistory];
+    }
+
+    // copy of messages before the first user message
+    const truncatedHistory = [...sliceMessageHistory(messageHistory, 0)];
+    let truncatedHistoryLength = fullLength;
+
+    let i: number;
+    let firstUserMsgAdded = false;
+
+</passage><passage file_path=src/helpers/prompt.ts>
+const createPrompt = (question: string, model: string, selection?: string) => {
+
+	let messageHistory = [];
+	if (model === 'gpt-4' || model === 'gpt-4-32k' || model === 'gpt-4-1106-preview'){
+		let systemMessageObject = { role: "system", content: 'You are an AI coding assistant.'} as ChatCompletionRequestMessage;
+		messageHistory.push(systemMessageObject);
+	} else {
+		let systemMessageObject = { role: "system", content: 'You are an AI coding assistant.'} as ChatCompletionRequestMessage;
+		messageHistory.push(systemMessageObject);
+	}
+
+	let userMessageObject: ChatCompletionRequestMessage = { role: "user" };
+	//let prompt = ''
+	if (selection) {
+		// If there is a selection, add the prompt and the selected text to the search prompt
+		if (Settings.getSettings().selectedInsideCodeblock) {
+			userMessageObject.content = selection + '\n\n' + question;
+		} else {
+			userMessageObject.content = selection + '\n\n' + question;
+		}
+	} else {
+		// Otherwise, just use the prompt if user typed it
+		userMessageObject.content = question;
+	}
+	messageHistory.push(userMessageObject);
+	return messageHistory;
+
+</passage><passage file_path=CHANGELOG.md>
+## [0.8.7]
+
+- BUG fix: Do not use version 0.8.6!
+
+## [0.8.6]
+
+- Improved streaming stability
+
+## [0.8.5]
+
+- Improved streaming bandwidth efficiency
+
+## [0.8.4]
+
+- Improved streaming stability
+
+## [0.8.3]
+
+- Extension now supports countries where openai api access is blocked
+
+## [0.8.2]
+
+- Security update, you must update to this version or else extension will stop working
+
+## [0.8.1]
+
+- Fixed a bug with textbox height not resetting when switching tabs
+
+## [0.8.0]
+
+- Adjusted rate limiter for in-line autocomplete
+
+## [0.7.9]
+
+- [EXPERIMENTAL] Added back in-line autocompletions. They are now much faster than before
+- Textboxes are now fixed-height by default. Added an option to expand and collapse them
+
+## [0.7.8]
+
+- Fixed a bug that causes the persistent error: "An error occurred while loading view: easycode.chatView"
+
+## [0.7.7]
+
+- Added support for vscode light themes
+- Fixed a bug where pressing enter does not work when ask codebase is selected
+
+## [0.7.6]
+
+
+</passage><passage file_path=walkthroughs/learn-more.md>
+### **EasyCode: Copy On Click**
+
+When this is checked, all the code inside a code block returned by EasyCode will be automatically copied to clipboard. 
+
+If you want finer control in terms of what to copy, leave this unchecked. When it’s unchecked, you can manually copy the section you want by selecting the code, and copying it. 
+
+### **EasyCode: Max Tokens**
+
+To have a larger context, set this lower! This is the maximum token for generating output. So the larger it is, the smaller your input (prompt) context will be. 
+
+### **EasyCode > Prompt Prefix**
+
+These are the prompts that are sent when you choose the ask GPT the various questions. You can customize these prompts to get your desired outcome.
+
+## Need help?
+
+- Post your question in [Discord](https://discord.com/invite/VgE3tQuKrg) (fastest) or
+- Email **support@easycode.ai** or
+- Submit a [support ticket](https://tally.so/r/n9X2YY)
+
+</passage><passage file_path=vsc-extension-quickstart.md>
+* Open the debug viewlet (`Ctrl+Shift+D` or `Cmd+Shift+D` on Mac) and from the launch configuration dropdown pick `Extension Tests`.
+* Press `F5` to run the tests in a new window with your extension loaded.
+* See the output of the test result in the debug console.
+* Make changes to `src/test/suite/extension.test.ts` or create new test files inside the `test/suite` folder.
+  * The provided test runner will only consider files matching the name pattern `**.test.ts`.
+  * You can create folders inside the `test` folder to structure your tests any way you want.
+
+## Go further
+
+
+</passage><passage file_path=src/apis/extensionToServerApi.ts>
+      client.post('/completion-chat/', getFormData).then(function(response:any){
+				console.log(response);
+			}).catch((error:any) =>{
+        console.error('An error occurred:', error);
+				if (error.response.status == 403){
+					reject('You are making too many requests per second.');
+				} else if (error.response.status == 429){
+					if (model == 'gpt-4' || model == 'gpt-4-1106-preview'){
+						reject('You have no more GPT-4 credits left. Please upgrade your plan or switch to GPT-3 in the settings.');
+					} else {
+						reject('You have reached the rate limit for free usage of this model. Please upgrade your plan.');
+					}
+				}
+      });
+
+      //await client.get('/user/');
+      let user_email = await context.globalState.get('userEmail');
+      let unique_channel_id = user_email + '-streamid-' + newStreamId;
+      const endpointUrl = baseUrl + '/ev/' + unique_channel_id;
+
+
+      let resolve: any;
+      let reject: any;
+      let promise = new Promise<string>((r, j) => { resolve = r; reject = j; });
+
+
+</passage><passage file_path=src/config/settings.ts>
+import { ExtensionSettings } from "../types/types";
+
+export class Settings {
+    static _settings: ExtensionSettings = {
+        selectedInsideCodeblock: false,
+        copyOnClick: true,
+        maxTokens: 500,
+        temperature: 0,
+        model: 'gpt-3.5-turbo',
+        userEmail: '',
+        openAIApiKey: '',
+        inlineCompletion: true,
+        dataCollection: true,
+        usePromptAssistant: true,
+        useOwnApiKey: false,
+        useActiveViewContext: false
+    };
+
+    static getSettings() {
+        return this._settings;
+    }
+
+    static setSettings(newSettings: ExtensionSettings) {
+        this._settings = {...this._settings, ...newSettings};
+    }
+
+</passage><passage file_path=easycode/rank_gpt/rank_loss.py>
+        # here we calculate the relative true relevance of every candidate pair
+        true_diffs = pairs_true[:, :, 0] - pairs_true[:, :, 1]
+        pred_diffs = selected_pred[:, :, 0] - selected_pred[:, :, 1]
+
+        # here we filter just the pairs that are 'positive' and did not involve a padded instance
+        # we can do that since in the candidate pairs we had symetric pairs so we can stick with
+        # positive ones for a simpler loss function formulation
+        the_mask = (true_diffs > 0) & (~torch.isinf(true_diffs))
+
+        pred_diffs = pred_diffs[the_mask]
+
+        weight = None
+        if weight_by_diff:
+            abs_diff = torch.abs(true_diffs)
+            weight = abs_diff[the_mask]
+        elif weight_by_diff_powed:
+            true_pow_diffs = torch.pow(pairs_true[:, :, 0], 2) - torch.pow(pairs_true[:, :, 1], 2)
+            abs_diff = torch.abs(true_pow_diffs)
+            weight = abs_diff[the_mask]
+
+        # here we 'binarize' true relevancy diffs since for a pairwise loss we just need to know
+
+</passage><passage file_path=src/apis/openaiClient.ts>
+                        */
+                    } catch(error:any) {
+                        console.error(error);
+                        reject(error);
+
+                        //OpenAI sometimes throws random errors mid stream. We don't want to stop the stream when this happens.
+                        //return;
+
+
+                        /*
+                        Sentry.captureException(error, {
+                            extra: {
+                                messageHistory: this._messageHistory[this._tabIndex],
+                                maxTokens: Settings.getSettings().maxTokens,
+                                usingOwnApiKey: (useOwnApiKey == true),
+                                temperature: Settings.getSettings().temperature,
+                                model: model
+                            }
+                        });
+                        this._view?.webview.postMessage({ type: 'addResponse', value: 'Could not JSON parse OpenAI stream message.', tabIndex: this._tabIndex });
+                        */
+
+</passage><passage file_path=package-lock.json>
+    "node_modules/react-redux": {
+      "version": "8.1.2",
+      "resolved": "https://registry.npmjs.org/react-redux/-/react-redux-8.1.2.tgz",
+      "integrity": "sha512-xJKYI189VwfsFc4CJvHqHlDrzyFTY/3vZACbE+rr/zQ34Xx1wQfB4OTOSeOSNrF6BDVe8OOdxIrAnMGXA3ggfw==",
+      "dependencies": {
+        "@babel/runtime": "^7.12.1",
+        "@types/hoist-non-react-statics": "^3.3.1",
+        "@types/use-sync-external-store": "^0.0.3",
+        "hoist-non-react-statics": "^3.3.2",
+        "react-is": "^18.0.0",
+        "use-sync-external-store": "^1.0.0"
+      },
+      "peerDependencies": {
+        "@types/react": "^16.8 || ^17.0 || ^18.0",
+        "@types/react-dom": "^16.8 || ^17.0 || ^18.0",
+        "react": "^16.8 || ^17.0 || ^18.0",
+        "react-dom": "^16.8 || ^17.0 || ^18.0",
+        "react-native": ">=0.59",
+        "redux": "^4 || ^5.0.0-beta.0"
+      },
+
+</passage><passage file_path=src/modules/indexCodebase.ts>
+import { addAllFilesToNodeSelectedMap, collectFileNodes, processFilesToNestedStructure } from '../helpers/fileNodeUtils';
+
+import { createPrompt } from '../helpers/prompt';
+import { easycode_url } from '../keys';
+import { createCodeLensProvider } from './codeLensProvider';
+import { createCacheGhRepoTask, getGhRepoCachePath, getGhRepoRootIdentifier } from '../helpers/githubCodebaseIndex';
+import {
+	createSentryRewriteFramesIntegration,
+	createSentryTags,
+	createSentryUser,
+	initializeExtensionSentry,
+} from '../sentry/node-extension-telemetry';
+import { jsonrepair } from 'jsonrepair'
+import { jaccardDistance } from '../helpers/jaccardDistance';
+import { createDiffView } from './diffViewProvider';
+import { renderWebview } from '../webviewProvider/Webview';
+
+import type { Ignore } from 'ignore';
+import type vscode175 from 'vscode-1-75';
+import type { ChatCompletionResponseMessage, ChatCompletionFunctions } from 'openai';
+import { EasyCodeClient, createEasyCodeClient } from '../apis/extensionToServerApi';
+
+</passage><passage file_path=src/types/types.ts>
+import * as vscode from 'vscode';
+import { ChatCompletionRequestMessage } from 'openai';
+import { SelectedCodebaseContent } from '../apis/extensionToServerApi';
+
+export interface EasyCodeChatMessage extends ChatCompletionRequestMessage {
+  easyCodeMetadata?: {
+    model?: string,
+    modelType?: string,
+    feedback?: 'positive' | 'negative',
+    isMessageComplete?: boolean,
+    useOwnApiKey?: boolean,
+    isAskCodebase?: boolean,
+    isAskWeb?: boolean,
+    useActiveViewContext?: boolean,
+    promptRevised?: boolean,
+    selectedCodebaseContent?: SelectedCodebaseContent
+  };
+}
+
+export interface FileTreeNode {
+	name: string;
+	path: string;
+	children: FileTreeNode[];
+	selected: boolean;
+	isFile?: boolean;
+}
+
+export interface DirectoryData {
+  fileTree: FileTreeNode[];
+  isProjectRoot:boolean;
+  selectedFolderPath:string;
+  rootLabel:string|undefined;
+}
+
+
+export interface ReferenceMapping {
+	ReferenceMethodFileMapping: Map<vscode.Uri, vscode.DocumentSymbol>;
+	methodName: string;
+	methodText: string;
+}
+
+
+</passage><passage file_path=src/webview/pages/components/AccountModal.tsx>
+import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter} from '@nextui-org/react';
+import { EasyCodeUser } from '../../../apis/extensionToServerApi';
+import { IoBatteryHalf, IoPersonOutline, IoRocketOutline } from 'react-icons/io5';
+
+interface AccountModalProps {
+  isOpen: boolean;
+  userProfile: EasyCodeUser;
+  setIsUpgradeModalOpen: any;
+  onClose: () => void;
+}
+
+
+</passage><passage file_path=easycode/views.py>
+@csrf_exempt
+@permission_classes([IsAuthenticated])
+@api_view(['POST'])
+@set_sentry_user
+def generate_codebase_prompts(request):
+    if request.method == 'POST':
+        codebase_summary = request.POST.get('codebase_summary')
+        user_email = request.user.email
+        
+        openai.api_key = available_open_ai_keys[0]
+        
+        completion = openai.ChatCompletion.create(
+            model='gpt-4',
+            messages=[
+                {"role": "system", "content": "You are a prompt generator for a GPT-3 AI coding assistant."},
+                {"role": "user", "content": codebase_summary + "\n\nBased on the codebase above, generate 3 questions to ask the AI"}
+            ],
+            temperature=0
+        )
+        
+        return JsonResponse({"codebase_classification": completion.choices[0].message.content})
+        
+    return HttpResponse('Method not allowed.')
+        
+
+</passage><passage file_path=src/modules/indexCodebase.ts>
+    if (useVscodeApi) {
+        paths = await vscode.workspace.findFiles(
+            new vscode.RelativePattern(root, pattern),
+            ignore && (ignore.length > 1 ? `{${ignore.join(',')}}` : ignore[0]),
+            undefined,
+            tokenSource.token,
+        );
+    } else {
+        paths = [];
+        const globStream = fglob.stream(pattern, {
+            ignore,
+            followSymbolicLinks: false,
+            cwd: rootUri.fsPath,
+        });
+        for await (const path of globStream) {
+            if (tokenSource.token.isCancellationRequested) {
+                break;
+            }
+            // use joinPath instead of letting fglob return absolute path to prevent
+            // include/ignore patterns from matching parts above the root
+            paths.push(vscode.Uri.joinPath(rootUri, vscode.Uri.file(path.toString()).path));
+        }
+    }
+
+    return paths;
+
+</passage><passage file_path=easycode/rank_gpt/README.md>
+        {'content': 'Title: To mask or not to mask: Modeling the potential for face mask use by the general public to curtail the COVID-19 pandemic Content: Face mask use by the general public for limiting the spread of the COVID-19 pandemic is controversial, though increasingly recommended, and the potential of this intervention is not well understood. We develop a compartmental model for assessing the community-wide impact of mask use by the general, asymptomatic public, a portion of which may be asymptomatically infectious. Model simulations, using data relevant to COVID-19 dynamics in the US states of New York and Washington, suggest that broad adoption of even relatively ineffective face masks may meaningfully reduce community transmission of COVID-19 and decrease peak hospitalizations and deaths. Moreover, mask use decreases the effective transmission rate in nearly linear proportion to the product of mask effectiveness (as a fraction of potentially infectious contacts blocked) and coverage rate (as'}
+
+</passage><passage file_path=templates/password_reset_email.html>
+{% autoescape off %}
+Hi,
+
+You're receiving this email because you requested a password reset for your account.
+
+Please click the link below to reset your password:
+
+{{ reset_link }}
+
+If you did not request this change, you can safely ignore this email.
+
+Thanks!
+{% endautoescape %}
+</passage><passage file_path=package-lock.json>
+    "node_modules/reconnecting-eventsource": {
+      "version": "1.6.2",
+      "resolved": "https://registry.npmjs.org/reconnecting-eventsource/-/reconnecting-eventsource-1.6.2.tgz",
+      "integrity": "sha512-vHhoxVLbA2YcfljWMKEbgR1KVTgwIrnyh/bzVJc+gfQbGcUIToLL6jNhkUL4E+9FbnAcfUVNLIw2YCiliTg/4g==",
+      "engines": {
+        "node": ">=12.0.0"
+      }
+    },
+    "node_modules/redux": {
+      "version": "4.2.1",
+      "resolved": "https://registry.npmjs.org/redux/-/redux-4.2.1.tgz",
+      "integrity": "sha512-LAUYz4lc+Do8/g7aeRa8JkyDErK6ekstQaqWQrNRW//MY1TvCEpMtpTWvlQ+FPbWCx+Xixu/6SHt5N0HR+SB4w==",
+      "dependencies": {
+        "@babel/runtime": "^7.9.2"
+      }
+    },
+    "node_modules/redux-thunk": {
+      "version": "2.4.2",
+      "resolved": "https://registry.npmjs.org/redux-thunk/-/redux-thunk-2.4.2.tgz",
+      "integrity": "sha512-+P3TjtnP0k/FEjcBL5FZpoovtvrTNT/UXd4/sluaSyrURlSlhLSzEdfsTBW7WsKB6yPvgd7q/iZPICFjW4o57Q==",
+      "peerDependencies": {
+        "redux": "^4"
+      }
+    },
+
+</passage><passage file_path=walkthroughs/refineContext.md>
+## Refine Context (Experimental)
+
+<img src="https://storage.googleapis.com/easycode-assets/refineContext.png" alt="Refine Context">
+
+Ask EasyCode to *only consider the files you want* and excludes the rest that don't apply to your current question. This is especially helpful when you are using a smaller context model such as gpt-3.5-turbo.
+</passage><passage file_path=src/webview/components/CommandLink.tsx>
+export default function CommandLink({ command, args, showAnchorIcon = false, children }: CommandLinkProps) {
+  const anchorRef = useRef<HTMLAnchorElement>(null);
+  const serializedArgs = useMemo(() => (
+    args !== undefined ? encodeURIComponent(JSON.stringify(args)) : undefined
+  ), [args]);
+  const uri = useMemo(() => {
+    let commandUri = `command:${command}`;
+    if (serializedArgs !== undefined) {
+      commandUri += `?${serializedArgs}`;
+    }
+    return commandUri;
+  }, [command, serializedArgs]);
+  const onPressHandler = useCallback(() => {
+    anchorRef.current?.click();
+  }, []);
+
+  return (
+    <>
+      <span className="w-full text-lg text-white hover:text-blue-500 cursor-pointer" onClick={onPressHandler}>{children}</span>
+      {/* create another anchor tag to hold the uri, directly using Link's href doesn't work */}
+      {createPortal(<a ref={anchorRef} className="hidden" href={uri} />, document.body)}
+    </>
+  );
+
+</passage><passage file_path=easycode/views.py>
+        except Exception as e:
+            print(e)
+            return "Server error", 500
+        
+@csrf_exempt
+def stripe_payment_webhook(request):
+    if request.method == 'POST':
+        # Replace this endpoint secret with your endpoint's unique secret
+        # If you are testing with the CLI, find the secret by running 'stripe listen'
+        # If you are using an endpoint defined with the API or dashboard, look in your webhook settings
+        # at https://dashboard.stripe.com/webhooks
+        
+
+</passage><passage file_path=easycode/rank_gpt/README.md>
+}
+```
+
+<details>
+<summary>Step by step example</summary>
+  
+  ```python
+  from rank_gpt import create_permutation_instruction, run_llm, receive_permutation
+  
+  # (1) Create permutation generation instruction
+  messages = create_permutation_instruction(item=item, rank_start=0, rank_end=3, model_name='gpt-3.5-turbo')
+  # (2) Get ChatGPT predicted permutation
+  permutation = run_llm(messages, api_key="Your OPENAI Key!", model_name=model_name='gpt-3.5-turbo')
+  # (3) Use permutation to re-rank the passage
+  item = receive_permutation(item, permutation, rank_start=0, rank_end=3)
+  
+  ```
+  
+</details>
+
+## Sliding window strategy
+
+We introduce a sliding window strategy for the instructional permutation generation, that enables LLMs to rank more passages than their maximum token limit.
+
+The idea is to rank from back to front using a sliding window, re-ranking only the passages within the window at a time.
+
+Below is an example by re-ranking 3 passages with window size of 2 and step size of 1:
+
+
+</passage><passage file_path=easycode/rank_gpt/README.md>
+```python
+from rank_gpt import sliding_windows
+api_key = "Your OPENAI Key"
+new_item = sliding_windows(item, rank_start=0, rank_end=3, window_size=2, step=1, model_name='gpt-3.5-turbo', api_key=api_key)
+print(new_item)
+```
+
+## Evaluation on Benchmarks
+We use [pyserini](https://github.com/castorini/pyserini) to retrieve 100 passages for each query and re-rank them using instructional permutation generation.
+
+Example of evaluation on TREC-DL19:
+
+
+</passage><passage file_path=easycode/tasks.py>
+        completion = openai.ChatCompletion.create(
+            model='gpt-4',
+            messages=[
+                {"role": "system", "content": "You are a prompt generator for GPT-3. You will generate 3 prompts. The first prompt will ask for an explanation of a feature. The second prompt will ask to code a new feature not on the list. The third prompt will ask to modify an existing feature."},
+                {"role": "user", "content": codebase_summary + "\n\nBased on the features above, generate the 3 prompts in a numbered list:"}
+            ],
+            temperature=0
+        )
+        
+        codebase_prompt_ideas +=  completion.choices[0].message.content
+        
+
+</passage><passage file_path=easycode/views.py>
+        completion = openai.ChatCompletion.create(
+            model='gpt-3.5-turbo',
+            messages=[
+                {"role": "system", "content": "You are a pro software developer who is a master at solving problems into specific research questions. You will take a query and determine 3 different questions to further research the codebase."},
+                {"role": "user", "content": "codebase context:\n\n" + codebase_summary + "\n\nquery: " + query + "\n\nGiven the codebase context and query, determine 3 specific questions you will research next. Just return the numbered list, do not try to explain or say anything else:"}
+            ],
+            temperature=0
+        )
+        text = completion.choices[0].message.content
+        
+        # Split the text into lines
+        lines = text.split('\n')
+        
+        # Filter out the lines that start with a number (assuming these are the questions)
+        sub_queries = [line for line in lines if line and line[0].isdigit()]
+        
+
+</passage><passage file_path=src/modules/generateCommitMessage.ts>
+import * as vscode from 'vscode';
+import { EasyCodeClient } from '../apis/extensionToServerApi';
+import { EasyCodeChatMessage } from '../types/types';
+import { Settings } from '../config/settings';
+
+
+</passage><passage file_path=easycode/rank_gpt/rank_gpt.py>
+    return ranks
+
+
+def get_prefix_prompt(query, num):
+    return [{'role': 'system',
+             'content': "You are RankGPT, an intelligent assistant that can rank code chunks based on their relevancy to the query."},
+            {'role': 'user',
+             'content': f"I will provide you with {num} code chunks, each indicated by number identifier []. \nRank the code chunks based on their relevance to query: {query}."},
+            {'role': 'assistant', 'content': 'Okay, please provide the code chunks.'}]
+
+
+def get_post_prompt(query, num):
+    return f"Search Query: {query}. \nRank the {num} code chunks above based on their relevance to the search query. The code chunks should be listed in descending order using identifiers. The most relevant code chunks should be listed first. The output format should be [] > [], e.g., [1] > [2]. Only respond with the ranking results, do not say any word or explain."
+
+
+
+</passage><passage file_path=walkthroughs/learn-more.md>
+## Additional Features
+
+<img src="https://storage.googleapis.com/easycode-assets/easycode-context.png" alt="Context Menu">
+
+**Ask GPT (context menu)**
+
+Select some code in the editor, right click, and choose “Ask GPT”. It’s used to ask a question or give a command that’s specific to the code you selected. 
+
+**Ask GPT: What does this do?**
+
+Explains in detail what the code is doing. Useful for code that’s hard to read for various reasons (unfamiliar language, next level regex, yaml/config files, etc).
+
+**Ask GPT: Refactor Code** 
+
+Refactor the selected code block.
+
+**Ask GPT: Write Unit Tests** 
+
+Write unit tests for the selected code block
+
+**Ask GPT: Write Code**
+
+Get code suggestion that are specific to the code you selected. For example:
+- “Modify a function so that it does ____”
+- “Write a test case that tests _____”
+- “Write documentation for this function”
+
+## Settings
+
+EasyCode settings can be accessed by clicking the “Settings” button above the question box. 
+
+
+</passage><passage file_path=src/webview/pages/components/TryWithoutAccount.tsx>
+import { Spinner } from '@nextui-org/react';
+import { useEffect, useRef } from 'react';
+import { useNavigation, useSubmit } from 'react-router-dom';
+import { useAppActionData } from '../../hooks';
+
+export default function TryWithoutAccount() {
+  const firstLoad = useRef<boolean>(true);
+  const data = useAppActionData<'loginWithPlaceholder'>()?.loginWithPlaceholder;
+  const navigation = useNavigation();
+
+  const submit = useSubmit();
+  useEffect(() => {
+    if (firstLoad.current) {
+      // prevent the 2nd effect triggered by React strict mode from calling submit
+      firstLoad.current = false;
+      submit(null, { method: 'POST', replace: true });
+    }
+  }, []);
+
+  return (
+    <div className="flex h-full px-6">
+      {navigation.state !== 'idle' && <Spinner label="Loading" className="mx-auto" />}
+      {(data && 'error' in data) && (
+        <div className="text-danger">{data.error?.message}</div>
+      )}
+    </div>
+  );
+
+</passage><passage file_path=src/webview/components/EditorContextMenuListener.tsx>
+const EditorContextMenuListener = () => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    //console.log("useEffect hook");
+
+</passage><passage file_path=easycode_server/settings.py>
+"""
+Django settings for easycode_server project.
+
+Generated by 'django-admin startproject' using Django 3.2.18.
+
+For more information on this file, see
+https://docs.djangoproject.com/en/3.2/topics/settings/
+
+For the full list of settings and their values, see
+https://docs.djangoproject.com/en/3.2/ref/settings/
+"""
+import os
+from pathlib import Path
+import yaml
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
+sentry_sdk.init(
+    dsn="https://d2dc19c5d5664406b8635bf576c1e74e@o4505094109331456.ingest.sentry.io/4505094324551680",
+    #integrations=[
+    #    DjangoIntegration(),
+    #],
+    
+    sample_rate=1.0,
+
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces_sample_rate=0.001,
+
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=False
+)
+
+
+</passage><passage file_path=src/webview/pages/components/Signup.tsx>
+export default function Signup() {
+  const [role, setRole] = useState<Key>('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
+  let fetcher = useFetcher();
+
+  const data = useAppActionData<'signup'>()?.signup;
+  const navigation = useNavigation();
+
+
+</passage><passage file_path=src/webview/pages/components/Login.tsx>
+import { Button, Input } from '@nextui-org/react';
+import { useState } from 'react';
+import { Form, useNavigation } from 'react-router-dom';
+import { useAppActionData } from '../../hooks';
+
+
+</passage><passage file_path=src/webview/pages/components/ForgotPassword.tsx>
+import { Button, Input } from '@nextui-org/react';
+import { useState } from 'react';
+import { Form } from 'react-router-dom';
+import { useAppActionData } from '../../hooks';
+
+
+</passage><passage file_path=src/apis/openaiClient.ts>
+import { ExtensionContext } from "vscode";
+import { EasyCodeChatMessage } from "../types/types";
+import { ChatCompletionRequestMessage, ChatCompletionResponseMessage, Configuration, OpenAIApi } from 'openai';
+import { Settings } from "../config/settings";
+import { convertToChatCompletionRequestMessage } from "../helpers/utils";
+import { countMessageHistoryTokens } from "../helpers/tokenCounters";
+
+let abortAllActiveStreams = false;
+
+export type EasyCodeOpenAIClientApi = {
+    abortAllStreams: () => Promise<void>,
+    submitChatMessage: (arg: { model: string, messages: EasyCodeChatMessage[]}) => AsyncGenerator<string, void, unknown>,
+    //streamChatResponse: (arg: { streamId: string }) => AsyncGenerator<string, void, unknown>
+};
+
+export type OpenAIClient = OpenAIApi & EasyCodeOpenAIClientApi;
+
+
+</passage><passage file_path=src/webview/components/CommandLink.tsx>
+import { Link } from '@nextui-org/react';
+import { useCallback, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import type { ReactNode } from 'react';
+
+export interface CommandLinkProps {
+  command: string;
+  args?: unknown;
+  showAnchorIcon?: boolean,
+  children?: ReactNode;
+}
+
+
+</passage><passage file_path=package-lock.json>
+    "node_modules/@reduxjs/toolkit": {
+      "version": "1.9.5",
+      "resolved": "https://registry.npmjs.org/@reduxjs/toolkit/-/toolkit-1.9.5.tgz",
+      "integrity": "sha512-Rt97jHmfTeaxL4swLRNPD/zV4OxTes4la07Xc4hetpUW/vc75t5m1ANyxG6ymnEQ2FsLQsoMlYB2vV1sO3m8tQ==",
+      "dependencies": {
+        "immer": "^9.0.21",
+        "redux": "^4.2.1",
+        "redux-thunk": "^2.4.2",
+        "reselect": "^4.1.8"
+      },
+      "peerDependencies": {
+        "react": "^16.9.0 || ^17.0.0 || ^18",
+        "react-redux": "^7.2.1 || ^8.0.2"
+      },
+      "peerDependenciesMeta": {
+        "react": {
+          "optional": true
+        },
+        "react-redux": {
+          "optional": true
+        }
+      }
+    },
+
+</passage><passage file_path=src/webview/pages/components/ForgotPassword.tsx>
+export default function ForgotPassword() {
+  const [email, setEmail] = useState('');
+
+  const data = useAppActionData<'forgotPassword'>()?.forgotPassword;
+  //console.log("data: ");
+  //console.log("data.data?.success: ", data?.data?.success);
+  return (
+    <Form replace method="POST">
+      <div className="flex flex-col gap-y-4 items-start px-6 w-64">
+        <Input
+          variant='bordered'
+          name="email"
+          type="email"
+          label="Email"
+          value={email}
+          onValueChange={(value: string) => { setEmail(value); }}
+        />
+
+        <Button type="submit" color="primary">Get Password Reset Link</Button>
+        {(data) && (
+          data.data?.success
+          ? <div className="text-success">Password Reset Email Sent.</div>
+          : <div className="text-danger">Failed to Send Password Reset Email.</div>
+        )}
+      </div>
+    </Form>
+  );
+
+</passage><passage file_path=src/modules/generateCommitMessage.ts>
+            let generateCommitMessageSystemMessage: EasyCodeChatMessage = {
+                role: 'system',
+                content:
+`Git Commit Message Format:
+
+Capitalized, short (50 chars or less) summary
+
+More detailed explanatory text, if necessary.  Each line should wrap to about 72
+characters or so.  The first line is treated as the
+subject of an email and the rest of the text as the body.  The blank
+line separating the summary from the body is critical; tools like rebase can get confused if you run the
+two together.
+
+Write your commit message in the imperative form: "Fix bug" and not "Fixed bug"
+or "Fixes bug."  This convention matches up with commit messages generated
+by commands like git merge and git revert.
+
+You are a git commit message generator that will write a commit message following the format above.`,
+            };
+
+
+</passage><passage file_path=src/modules/generateCommitMessage.ts>
+export async function generateCommitMessage(easyCodeClient: EasyCodeClient){
+
+    const gitExtension = vscode.extensions.getExtension('vscode.git');
+
+    const git = gitExtension?.exports.getAPI(1);
+
+    let workspaceFolders = vscode.workspace.workspaceFolders;
+
+</passage><passage file_path=src/types/types.ts>
+export interface CodeEvalHandle {
+	run: ({ signal }?: { signal?: AbortSignal }) => void,
+}
+
+export interface ExtendedWebviewViewProvider extends vscode.WebviewViewProvider {
+	postMessage: (message: any) => void;
+  clearCache: () => void;
+  createLocalOpenAIClient: (apiKey: string | undefined) => void;
+}
+
+export type AuthInfo = {apiKey?: string}
+
+</passage><passage file_path=src/sentry/react-webview-telemetry.ts>
+import React from 'react';
+import { createRoutesFromChildren, matchRoutes, useLocation, useNavigationType } from 'react-router-dom';
+import * as SentryReact from "@sentry/react"
+import { easycode_url } from '../keys';
+
+export const createSentryUser = ({ email }: { email?: string } = {}): SentryReact.User => ({
+    email,
+    ip_address: '{{auto}}',
+});
+
+
+</passage><passage file_path=src/sentry/react-webview-telemetry.ts>
+export const initializeReactWebviewSentry = () => {
+    SentryReact.init({
+        enabled: !!process.env.SENTRY_ENABLED,
+        release: `${process.env.npm_package_name}@${process.env.npm_package_version}`,
+        environment: process.env.NODE_ENV,
+        dsn: "https://d95c2e12efc5488cabcbc5c4ddbfa207@o4505094109331456.ingest.sentry.io/4505094523387904",
+
+        sendDefaultPii: true,
+
+        integrations: [
+          new SentryReact.BrowserTracing({
+            // See docs for support of different versions of variation of react router
+            // https://docs.sentry.io/platforms/javascript/guides/react/configuration/integrations/react-router/
+            routingInstrumentation: SentryReact.reactRouterV6Instrumentation(
+              React.useEffect,
+              useLocation,
+              useNavigationType,
+              createRoutesFromChildren,
+              matchRoutes
+            ),
+          }),
+          new SentryReact.Replay({
+            maskAllText: false,
+            maskAllInputs: false,
+            blockAllMedia: false,
+          }),
+        ],
+
+
+</passage><passage file_path=easycode/rank_gpt/run_evaluation.py>
+    for item in tqdm(rank_results):
+        new_item = sliding_windows(item, rank_start=0, rank_end=10, window_size=20, step=10,
+                                   model_name='gpt-3.5-turbo', api_key=openai_key)
+        new_results.append(new_item)
+
+    # Evaluate nDCG@10
+    from trec_eval import EvalFunction
+
+    # Create an empty text file to write results, and pass the name to eval
+    output_file = tempfile.NamedTemporaryFile(delete=False).name
+    write_eval_file(new_results, output_file)
+    EvalFunction.eval(['-c', '-m', 'ndcg_cut.10', THE_TOPICS[data], output_file])
+    # Rename the output file to a better name
+
+</passage><passage file_path=src/webview/pages/components/Signup.tsx>
+import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input, Select } from '@nextui-org/react';
+import { useState } from 'react';
+import { Form, useFetcher, useNavigation } from 'react-router-dom';
+
+import type { Selection } from '@nextui-org/react';
+import type { Key} from 'react';
+import { useAppActionData } from '../../hooks';
+
+const ROLE_OPTIONS = [
+  { key: '', label: 'Select Your Role' },
+  { key: 'DV', label: 'Developer' },
+  { key: 'ID', label: 'IT/Devops' },
+  { key: 'QA', label: 'QA' },
+  { key: 'DS', label: 'Data Scientist' },
+  { key: 'PR', label: 'Product' },
+  { key: 'ST', label: 'Student' },
+  { key: 'OT', label: 'Other' },
+];
+
+const DISABLED_OPTIONS = [''];
+
+
+</passage><passage file_path=src/sentry/node-extension-telemetry.ts>
+import module from 'node:module';
+import runtimeProcess from 'node:process';
+
+import * as vscode from 'vscode';
+import * as SentryNode from '@sentry/node';
+import { ExtraErrorData, RewriteFrames } from '@sentry/integrations';
+
+import { easycode_url } from '../keys';
+
+import type { ExtensionContext } from 'vscode';
+import type { TelemetrySender } from 'vscode-1-75';
+
+// extension code is wrapped in a function wrapper
+// calculate the wrapper prefix to subtract from stacktrace colum number
+const NODE_WRAPPER_PREFIX_LENGTH = module.wrap('__EASYCODE__').indexOf('__EASYCODE__');
+
+
+</passage><passage file_path=src/webview/pages/components/Layout.tsx>
+import { Outlet, ScrollRestoration } from 'react-router-dom';
+import { AppNav } from '../../components';
+import { useRef, useState } from 'react';
+import { ChatHistoryMenuItemProvider } from '../../components/ChatHistoryMenuItemContext';
+import React from 'react';
+
+export default function Layout() {
+
+  const [isMenuOpen, setMenuOpen] = useState(false);
+  const historyMenuButtonRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <>
+      <ChatHistoryMenuItemProvider value={{ isHistoryMenuOpen: isMenuOpen, setHistoryMenuOpen: setMenuOpen, historyMenuButtonRef: historyMenuButtonRef}}>
+      <AppNav />
+      <main className="flex-grow">
+        <Outlet />
+      </main>
+      </ChatHistoryMenuItemProvider>
+      <ScrollRestoration />
+    </>
+  );
+
+</passage><passage file_path=src/webview/pages/components/Login.tsx>
+export default function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const data = useAppActionData<'login'>()?.login;
+  const navigation = useNavigation();
+
+  return (
+    <Form replace method="POST" className="flex flex-col gap-y-4 items-start px-6 w-64">
+      <Input
+        variant='bordered'
+        name="email"
+        type="email"
+        label="Email"
+        value={email}
+        onValueChange={(value: string) => { setEmail(value); }}
+      />
+      <Input
+        variant='bordered'
+        name="password"
+        type="password"
+        label="Password"
+        value={password}
+        onValueChange={(value: string) => { setPassword(value); }}
+      />
+
+      <Button
+        type="submit"
+        color="primary"
+        isLoading={navigation.state !== 'idle'}
+      >
+        Login
+      </Button>
+
+      {(data && 'error' in data) && (
+        <div className="text-danger">{data.error?.message}</div>
+      )}
+    </Form>
+  );
+
+</passage><passage file_path=src/apis/openaiClient.ts>
+                        /*
+                        if (isAskCodebase && isAskCodebase == true) {
+                            this.getMixPanel()?.track('Answered Ask Codebase', {
+                                distinct_id: this.getMachineId(),
+                                useOwnApiKey,
+                            });
+                        }
+
+                        let encodedResponse = enc.encode(response);
+                        if (model == 'gpt-4'){
+                            this.getMixPanel()?.people.increment(this.getMachineId(), 'User API Key GPT-4 Output Tokens Used', encodedResponse.length);
+                            this.getMixPanel()?.people.increment(this.getMachineId(), 'User API Key GPT-4 Output Cost ($0.06/1000 tokens)', (encodedResponse.length / 1000) * 0.06);
+                        } else {
+                            this.getMixPanel()?.people.increment(this.getMachineId(), 'User API Key GPT-3.5 Output Tokens Used', encodedResponse.length);
+                            this.getMixPanel()?.people.increment(this.getMachineId(), 'User API Key GPT-3.5 Output Cost ($0.002/1000 tokens)', (encodedResponse.length / 1000) * 0.002);
+                        }
+
+
+</passage><passage file_path=src/webview/components/ExternalLink.tsx>
+import { useMemo } from 'react';
+import { CommandLink } from './';
+import type { ReactNode } from 'react';
+
+export interface ExternalLinkProps {
+  url: URL;
+  children?: ReactNode;
+}
+
+export default function ExternalLink({ url, children }: ExternalLinkProps) {
+  const args = useMemo(() => ({
+    scheme: url.protocol.substring(0, url.protocol.length - 1),
+    authority: url.host,
+    path: url.pathname,
+    ...(url.search.length ? { query: url.search } : {}),
+    ...(url.hash.length ? { fragment: url.hash } : {}),
+  }), [url]);
+
+  return (
+    <CommandLink showAnchorIcon command="vscode.open" args={args}>
+      {children}
+    </CommandLink>
+  );
+
+</passage><passage file_path=manage.py>
+#!/usr/bin/env python
+"""Django's command-line utility for administrative tasks."""
+import os
+import sys
+
+
+def main():
+    """Run administrative tasks."""
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'easycode_server.settings')
+    try:
+        from django.core.management import execute_from_command_line
+    except ImportError as exc:
+        raise ImportError(
+            "Couldn't import Django. Are you sure it's installed and "
+            "available on your PYTHONPATH environment variable? Did you "
+            "forget to activate a virtual environment?"
+        ) from exc
+    execute_from_command_line(sys.argv)
+
+
+if __name__ == '__main__':
+
+</passage><passage file_path=easycode/rank_gpt/run_evaluation.py>
+    for item in tqdm(rank_results):
+        new_item = sliding_windows(item, rank_start=0, rank_end=100, window_size=20, step=10,
+                                   model_name='gpt-3.5-turbo', api_key=openai_key)
+        new_results.append(new_item)
+
+    # Evaluate nDCG@10
+    from trec_eval import EvalFunction
+
+    temp_file = tempfile.NamedTemporaryFile(delete=False).name
+    write_eval_file(new_results, temp_file)
+    EvalFunction.eval(['-c', '-m', 'ndcg_cut.10', THE_TOPICS[data], temp_file])
+        # Rename the output file to a better name
+
+</passage><passage file_path=src/helpers/githubCodebaseIndex.ts>
+import stream from "node:stream";
+
+import vscode from "vscode";
+import fetch from "node-fetch";
+import tar from "tar";
+
+import type { ExtensionContext, Progress } from "vscode";
+
+const GITHUB_API = 'https://api.github.com';
+
+export const getGhCommitCacheKey = ({ owner, name, ref }: { owner: string, name: string, ref: string }) => {
+    const encodedOwner = encodeURIComponent(owner);
+    const encodedName = encodeURIComponent(name);
+    const encodedRef = encodeURIComponent(ref);
+    return `gh-hash-${encodedOwner}-${encodedName}-${encodedRef}`;
+};
+
+const getGhRepoCacheKey = ({ commit }: { commit: string }) => `gh-cache-${commit}`;
+
+export const getGhRepoCachePath = ({ context, commit }: { context: ExtensionContext, commit: string }) => (
+    vscode.Uri.joinPath(context.globalStorageUri, 'gh', commit)
+);
+
+export const getGhRepoRootIdentifier = ({ commit }: { commit: string }) => `git-${commit}:`;
+
+
+</passage><passage file_path=src/helpers/githubCodebaseIndex.ts>
+const cacheGhRepo = async ({ context, owner, name, commit }: { context: ExtensionContext, owner: string, name: string, commit: string }) => {
+    const encodedOwner = encodeURIComponent(owner);
+    const encodedName = encodeURIComponent(name);
+    const cachePath = vscode.Uri.joinPath(context.globalStorageUri, 'gh', commit);
+    const { ok, body } = await fetch(new URL(`/repos/${encodedOwner}/${encodedName}/tarball/${commit}`, GITHUB_API));
+    if (!ok || !body) {
+        throw new Error('Failed to download repository');
+    }
+
+    const tmpPath = vscode.Uri.joinPath(context.globalStorageUri, 'gh', `.tmp-${commit}`);
+    await vscode.workspace.fs.createDirectory(tmpPath);
+    await stream.promises.pipeline(body, tar.extract({ cwd: tmpPath.fsPath, strip: 1 }));
+
+    await vscode.workspace.fs.createDirectory(cachePath);
+    await vscode.workspace.fs.rename(tmpPath, cachePath, { overwrite: true });
+};
+
+
+</passage><passage file_path=src/sentry/node-extension-telemetry.ts>
+export const initializeExtensionSentry = () => {
+    SentryNode.init({
+        enabled: !!process.env.SENTRY_ENABLED,
+        release: `${process.env.npm_package_name}@${process.env.npm_package_version}`,
+        environment: process.env.NODE_ENV,
+        dsn: "https://6eca0b151027458aae43c25d5ea2c29c@o4505094109331456.ingest.sentry.io/4505094113787904",
+        // Set tracesSampleRate to 1.0 to capture 100%
+        // of transactions for performance monitoring.
+        // We recommend adjusting this value in production
+        tracesSampleRate: 0.01,
+        tracePropagationTargets: [
+            easycode_url,
+            // inline completion endpoint
+            '209.20.159.29',
+        ],
+
+        sendDefaultPii: true,
+
+        initialScope: scope => (
+            scope
+                .setUser(createSentryUser())
+                .setTags(createSentryTags())
+                .setContext('Environment Variables', runtimeProcess.env)
+        ),
+
+        // enable integrations manually to avoid problematic integrations
+        defaultIntegrations: false,
+
+</passage><passage file_path=src/webview/pages/components/Signup.tsx>
+  return (
+    <Form replace method="POST">
+      <div className="flex flex-col gap-y-4 items-start px-6 w-64">
+        <Input
+          variant='bordered'
+          name="email"
+          type="email"
+          label="Email"
+          value={email}
+          onValueChange={(value: string) => { setEmail(value); }}
+        />
+        <Input
+          variant='bordered'
+          name="password"
+          type="password"
+          label="Password"
+          value={password}
+          onValueChange={(value: string) => { setPassword(value); }}
+        />
+        <Input
+          variant='bordered'
+          name="passwordConfirm"
+          type="password"
+          label="Confirm Password"
+          value={passwordConfirm}
+          onValueChange={(value: string) => { setPasswordConfirm(value); }}
+        />
+        {/* this is used to hold the value for the form post */}
+
+</passage><passage file_path=src/webview/helpers/LazyHighlighter.tsx>
+import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import hljs from 'highlight.js';
+
+function LazyHighlighter({ language, value }: {language:any, value:any }) {
+  //const ref = useRef<HTMLDivElement>(null);
+
+  if (!language){
+    const result = hljs.highlightAuto(value);
+    language = result.language;
+  }
+
+  return (
+    <div>
+      {(
+        <SyntaxHighlighter language={language} style={atomOneDark}>
+          {value}
+        </SyntaxHighlighter>
+      )}
+    </div>
+  );
+}
+
+
+</passage><passage file_path=easycode_server/__init__.py>
+# This will make sure the app is always imported when
+# Django starts so that shared_task will use this app.
+from .celery import app as celery_app
+
+__all__ = ('celery_app',)
+</passage><passage file_path=src/sentry/react-webview-telemetry.ts>
+        // Set tracesSampleRate to 0.01 to capture 1%
+        // of transactions for performance monitoring.
+        tracesSampleRate: 0.01,
+
+        // Set `tracePropagationTargets` to control for which URLs distributed tracing should be enabled
+        tracePropagationTargets: [
+          easycode_url,
+          // inline completion endpoint
+          '209.20.159.29',
+        ],
+
+        // Capture Replay for 0.1% of all sessions,
+        // plus for 100% of sessions with an error
+        replaysSessionSampleRate: 0.001,
+        replaysOnErrorSampleRate: 1.0,
+
+</passage><passage file_path=package.json>
+    "react-dom": "^18.2.0",
+    "react-feather": "^2.0.10",
+    "react-highlight": "^0.15.0",
+    "react-icons": "^4.10.1",
+    "react-markdown": "^8.0.7",
+    "react-redux": "^8.1.2",
+    "react-router-dom": "^6.14.2",
+    "react-showdown": "^2.3.1",
+    "react-syntax-highlighter": "^15.5.0",
+    "react-visibility-sensor": "^5.1.1",
+    "react-waypoint": "^10.3.0",
+    "react-window": "^1.8.9",
+    "reconnecting-eventsource": "^1.6.2",
+    "remark-gfm": "^3.0.1",
+    "tar": "^6.1.15",
+    "uuid": "^9.0.0",
+    "winston-loggly-bulk": "^3.2.1",
+    "winston-logzio": "^5.1.7"
+
+</passage><passage file_path=easycode/rank_gpt/NovelEval/README.md>
+# NovelEval
+*A new test set with the novel queries and passages that have not been contaminated by the latest LLMs*
+
+The questions in the current benchmark dataset are typically gathered years ago, which raises the issue that existing LLMs already possess knowledge of these questions.
+Furthermore, since many LLMs do not disclose information about their training data, there is a potential risk of contamination of the existing benchmark test set.
+However, re-ranking models are expected to possess the capability to comprehend, deduce, and rank knowledge that is inherently unknown to them.
+
+Therefore, we suggest constructing **continuously updated IR test sets** to ensure that the questions, passages to be ranked, and relevance annotations have not been learned by the latest LLMs for a fair evaluation.
+
+## Data Collection
+
+</passage><passage file_path=src/sentry/node-extension-telemetry.ts>
+        integrations: [
+            // default integrations
+            new SentryNode.Integrations.InboundFilters(),
+            new SentryNode.Integrations.FunctionToString(),
+            new SentryNode.Integrations.Http(),
+            new SentryNode.Integrations.Undici(),
+            new SentryNode.Integrations.ContextLines(),
+            new SentryNode.Integrations.Context(),
+            new SentryNode.Integrations.LinkedErrors(),
+
+            // other integrations
+            new ExtraErrorData(),
+        ],
+
+</passage><passage file_path=easycode/rank_gpt/rank_loss.py>
+        """
+        RankNet loss introduced in "Learning to Rank using Gradient Descent".
+        :param y_pred: predictions from the model, shape [batch_size, slate_length]
+        :param y_true: ground truth labels, shape [batch_size, slate_length]
+        :param weight_by_diff: flag indicating whether to weight the score differences by ground truth differences.
+        :param weight_by_diff_powed: flag indicating whether to weight the score differences by the squared ground truth differences.
+        :return: loss value, a torch.Tensor
+        """
+        if y_true is None:
+            y_true = torch.zeros_like(y_pred).to(y_pred.device)
+            y_true[:, 0] = 1
+
+        # here we generate every pair of indices from the range of document length in the batch
+        document_pairs_candidates = list(product(range(y_true.shape[1]), repeat=2))
+
+        pairs_true = y_true[:, document_pairs_candidates]
+        selected_pred = y_pred[:, document_pairs_candidates]
+
+
+</passage><passage file_path=easycode/rank_gpt/NovelEval/README.md>
+As an initial effort, we built **NovelEval-2306**, a novel test set with 21 novel questions collected during 2023-06. 
+This test set is constructed by gathering questions and passages fromfrom 4 domains that were published after the release of GPT-4.
+To ensure that GPT-4 did not possess prior knowledge of these questions, we presented them to both gpt-4-0314 and gpt-4-0613.
+For instance, question *"Which film was the 2023 Palme d'Or winner?"* pertains to the Cannes Film Festival that took place on May 27, 2023, rendering its answer inaccessible to most existing LLMs.
+Next, we searched 20 candidate passages for each question using Google search.
+The relevance of these passages was manually labeled as: 0 for not relevant, 1 for partially relevant, and 2 for relevant.
+
+
+## Files
+
+</passage><passage file_path=easycode/rank_gpt/rank_loss.py>
+        """
+        LambdaLoss framework for LTR losses implementations, introduced in "The LambdaLoss Framework for Ranking Metric Optimization".
+        Contains implementations of different weighing schemes corresponding to e.g. LambdaRank or RankNet.
+        :param y_pred: predictions from the model, shape [batch_size, slate_length]
+        :param y_true: ground truth labels, shape [batch_size, slate_length]
+        :param eps: epsilon value, used for numerical stability
+        :param padded_value_indicator: an indicator of the y_true index containing a padded item, e.g. -1
+        :param weighing_scheme: a string corresponding to a name of one of the weighing schemes
+        :param k: rank at which the loss is truncated
+        :param sigma: score difference weight used in the sigmoid function
+        :param mu: optional weight used in NDCGLoss2++ weighing scheme
+        :param reduction: losses reduction method, could be either a sum or a mean
+        :param reduction_log: logarithm variant used prior to masking and loss reduction, either binary or natural
+        :return: loss value, a torch.Tensor
+
+</passage><passage file_path=easycode_server/urls.py>
+from django.urls import include, path
+"""easycode_server URL Configuration
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/3.2/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
+from django.contrib import admin
+from django.urls import path
+
+urlpatterns = [
+    path('', include('easycode.urls'))
+
+</passage><passage file_path=easycode/rank_gpt/run_evaluation.py>
+    print('#' * 20)
+    print(f'Evaluation on {data}')
+    print('#' * 20)
+
+    # Retrieve passages using pyserini BM25.
+    try:
+        searcher = LuceneSearcher.from_prebuilt_index(THE_INDEX[data])
+        topics = get_topics(THE_TOPICS[data] if data != 'dl20' else 'dl20')
+        qrels = get_qrels(THE_TOPICS[data])
+        rank_results = run_retriever(topics, searcher, qrels, k=100)
+        rank_results = rank_results[:100]
+
+        # Store JSON in rank_results to a file
+        with open(f'rank_results_{data}.json', 'w') as f:
+            json.dump(rank_results, f, indent=2)
+        # Store the QRELS of the dataset
+        with open(f'qrels_{data}.json', 'w') as f:
+            json.dump(qrels, f, indent=2)
+    except:
+        print(f'Failed to retrieve passages for {data}')
+
+    # Run sliding window permutation generation
+    new_results = []
+
+</passage><passage file_path=easycode/urls.py>
+urlpatterns = [
+    path("", views.index, name='index'),
+    path("register/", views.UserRegistrationAPIView.as_view(), name="create-user"),
+    path("login/", views.UserLoginAPIView.as_view(), name="login-user"),
+    path("token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
+    path("logout/", views.UserLogoutAPIView.as_view(), name="logout-user"),
+    path("user/", views.UserAPIView.as_view(), name="user-info"),
+    path("record_token_usage/", views.RecordTokenUsageView.as_view(), name="record-token-usage"),
+    path("check_available_api_tokens/", views.check_available_API_keys, name="check-available-api-tokens"),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('create_checkout_session/', views.create_stripe_checkout_session, name='create-stripe-checkout-session'),
+    path('payment_webhook/', views.stripe_payment_webhook, name='stripe-payment-webhook'),
+
+</passage><passage file_path=easycode/urls.py>
+"""easycode_server URL Configuration
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/3.2/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
+from django.contrib import admin
+from django.urls import path, include
+from rest_framework import routers
+from rest_framework_simplejwt.views import TokenRefreshView
+import django_eventstream
+
+from . import views
+
+router = routers.DefaultRouter()
+router.register(r'users', views.UserViewSet)
+
+
+</passage><passage file_path=easycode/migrations/0001_initial.py>
+                ('last_name', models.CharField(blank=True, max_length=150, verbose_name='last name')),
+                ('is_staff', models.BooleanField(default=False, help_text='Designates whether the user can log into this admin site.', verbose_name='staff status')),
+                ('is_active', models.BooleanField(default=True, help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.', verbose_name='active')),
+                ('date_joined', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date joined')),
+                ('email', models.EmailField(max_length=254, unique=True)),
+                ('placeholder_account', models.BooleanField(default=False)),
+                ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.group', verbose_name='groups')),
+
+</passage><passage file_path=easycode/rank_gpt/download_dataset.py>
+            f.write(json.dumps(doc, ensure_ascii=False) + "\n")
+
+
+
+# for data in ['mrtydi-ar', 'mrtydi-bn', 'mrtydi-fi', 'mrtydi-id', 'mrtydi-ja', 'mrtydi-ko', 'mrtydi-ru', 'mrtydi-sw', 'mrtydi-te', 'mrtydi-th']:
+#     print('#' * 20)
+#     print(f'Evaluation on {data}')
+#     print('#' * 20)
+
+#     # Retrieve passages using pyserini BM25.
+#     try:
+#         searcher = LuceneSearcher.from_prebuilt_index(THE_INDEX[data])
+#         topics = get_topics(THE_TOPICS[data] if data != 'dl20' else 'dl20')
+#         qrels = get_qrels(THE_TOPICS[data])
+#         rank_results = run_retriever(topics, searcher, qrels, k=100)
+#         rank_results = rank_results[:100]
+
+#         # Store JSON in rank_results to a file
+#         with open(f'rank_results_{data}.json', 'w') as f:
+#             json.dump(rank_results, f, indent=2)
+#         # Store the QRELS of the dataset
+#         with open(f'qrels_{data}.json', 'w') as f:
+#             json.dump(qrels, f, indent=2)
+#     except:
+#         print(f'Failed to retrieve passages for {data}')
+
+
+</passage><passage file_path=easycode_server/settings.py>
+# https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+AUTH_USER_MODEL = 'easycode.User'
+
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_UNIQUE_USERNAME = False
+
+# Internationalization
+# https://docs.djangoproject.com/en/3.2/topics/i18n/
+
+LANGUAGE_CODE = 'en-us'
+
+TIME_ZONE = 'UTC'
+
+USE_I18N = True
+
+USE_L10N = True
+
+USE_TZ = True
+
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/3.2/howto/static-files/
+
+STATIC_URL = '/static/'
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
+
+
+</passage><passage file_path=easycode/serializers.py>
+    def create(self, validated_data):
+        # Query the highest gpt_4_tokens_used value for users with the same vsc_registration_machine_id
+        #vsc_registration_machine_id = validated_data.get("vsc_registration_machine_id")
+        #highest_gpt_4_tokens_used = User.objects.filter(vsc_registration_machine_id=vsc_registration_machine_id).aggregate(Max('gpt_4_tokens_used'))['gpt_4_tokens_used__max']
+
+        # Set the gpt_4_tokens_used of the new user to the highest value found, or 0 if no users with the same vsc_registration_machine_id are found
+        validated_data["gpt_4_tokens_used"] = 0
+        validated_data["gpt_3_tokens_used"] = 0
+
+</passage><passage file_path=src/sentry/easycodeSentryGlobal.ts>
+const KEY = '__SENTRY__' as const;
+const sentryStore: { [KEY]: any } = { [KEY]: undefined };
+
+const resolveTarget = <T>(p: string | symbol, target: T) => {
+    return p === KEY ? sentryStore : target;
+};
+
+// Create a proxy for globalThis for Sentry
+// to isolate the global __SENTRY__ variable
+
+</passage><passage file_path=src/helpers/githubCodebaseIndex.ts>
+const validateGhRepoCache = async ({ context, commit }: { context: ExtensionContext, commit: string }) => {
+    const isRepoCached = context.globalState.get(getGhRepoCacheKey({ commit }), false);
+    if (isRepoCached) {
+        try {
+            // make sure the cache is present
+            await vscode.workspace.fs.stat(getGhRepoCachePath({ context, commit }));
+            return true;
+        } catch (e) {
+            // file not found, ignored
+            context.globalState.update(getGhRepoCacheKey({ commit }), undefined);
+        }
+    }
+
+    return false;
+};
+
+
+</passage><passage file_path=easycode/cst_code_splitter.py>
+from __future__ import annotations
+from dataclasses import dataclass
+import re
+from tree_sitter import Tree
+from tree_sitter_languages import get_language, get_parser
+
+# Implementation adapted from https://docs.sweep.dev/blogs/chunking-improvements
+# Not using llamaindex because their implementation does not have the improvements compared to what's shown in the blog
+# Not using langchain as it does not support this feature
+
+
+</passage><passage file_path=easycode/rank_gpt/rank_gpt.py>
+def permutation_pipeline(item=None, rank_start=0, rank_end=100, top_n=10, model_name='gpt-3.5-turbo', api_key=None):
+    messages = create_permutation_instruction(item=item, rank_start=rank_start, rank_end=rank_end,
+                                              model_name=model_name) # chan
+    print("starting llm run")
+    print(datetime.now())
+    permutation = run_llm(messages, top_n=top_n, api_key=api_key, model_name=model_name)
+    print("ending llm run")
+    print(datetime.now())
+    item, ranklist = receive_permutation(item, permutation, rank_start=rank_start, rank_end=rank_end)
+    return item, ranklist
+
+
+
+</passage><passage file_path=easycode/rank_gpt/rank_gpt.py>
+                else:
+                    print("using litellm")
+                    response = completion(*args, **kwargs, api_key=self.api_key, force_timeout=30)
+                    for chunk in response:
+                        content = chunk["choices"][0].get("delta", {}).get("content")
+                        if content is not None:
+                            response_text += content
+                            if (']' in content):
+                                closing_bracket_count += 1
+                            if closing_bracket_count >= top_n:
+
+</passage><passage file_path=easycode/cst_code_splitter.py>
+@dataclass
+class Span:
+    # Represents a slice of a string
+    start: int = 0
+    end: int = 0
+
+    def __post_init__(self):
+        # If end is None, set it to start
+        if self.end is None:
+            self.end = self.start
+
+    def extract(self, s: str) -> str:
+        # Grab the corresponding substring of string s by bytes
+        return s[self.start : self.end]
+    
+    def extract_chars(self, s: str) -> str:
+        # Grab the corresponding substring of string s by characters
+        return s[self.start : self.end]
+
+    def extract_lines(self, s: str) -> str:
+        # Grab the corresponding substring of string s by lines
+        return "\n".join(s.splitlines()[self.start : self.end])
+
+
+</passage><passage file_path=src/helpers/prompt.ts>
+	/*
+	This used to be needed with the old code running UI, but is no longer necessary and offers
+	more flexibility in switching between languages without locking gpt into the same language
+	*/
+
+	/*
+	if (codeEvalLang in codeEvalExampleScript) {
+		messageHistory.push(
+			{
+				role: 'assistant',
+				// https://github.com/openai/openai-node/issues/195
+				// @ts-ignore
+				content: null,
+				function_call: {
+					name: codeEvalLang,
+					arguments: JSON.stringify({ script: codeEvalExampleScript[codeEvalLang] }),
+				},
+			}
+		);
+	}*/
+
+</passage><passage file_path=easycode/rank_gpt/download_dataset.py>
+for data in ["signal", "news"]:
+    print("#" * 20)
+    print(f"Evaluation on {data}")
+    print("#" * 20)
+
+    # Retrieve passages using pyserini BM25.
+    # Get a specific doc:
+    # * searcher.num_docs
+    # * json.loads(searcher.object.reader.document(4).fields[1].fieldsData) -> {"id": "1", "contents": ""}
+    searcher = LuceneSearcher.from_prebuilt_index(THE_INDEX[data])
+    topics = get_topics(THE_TOPICS[data] if data != "dl20" else "dl20")
+    qrels = get_qrels(THE_TOPICS[data])
+
+    # Create a folder for the dataset
+    data_folder = Path(__file__).parent / "data" / data
+    data_folder.mkdir(exist_ok=True, parents=True)
+
+    # Store JSON in rank_results to a file
+    with open(data_folder / "queries.jsonl", "w") as f:
+        for key, value in topics.items():
+            f.write(
+                json.dumps({"_id": str(key), "text": value["title"]}, ensure_ascii=False) + "\n"
+            )
+    # Store the QRELS of the dataset
+    (data_folder / "qrels").mkdir(exist_ok=True, parents=True)
+
+</passage><passage file_path=easycode/rank_gpt/trec_eval.py>
+    @staticmethod
+    def eval(args, trunc=True):
+        script_path = download_evaluation_script('trec_eval')
+        cmd_prefix = ['java', '-jar', script_path]
+        # args = sys.argv
+
+        # Option to discard non-judged hits in run file
+        judged_docs_only = ''
+        judged_result = []
+        cutoffs = []
+
+        if '-remove-unjudged' in args:
+            judged_docs_only = args.pop(args.index('-remove-unjudged'))
+
+        if any([i.startswith('judged.') for i in args]):
+            # Find what position the arg is in.
+            idx = [i.startswith('judged.') for i in args].index(True)
+            cutoffs = args.pop(idx)
+            cutoffs = list(map(int, cutoffs[7:].split(',')))
+            # Get rid of the '-m' before the 'judged.xxx' option
+            args.pop(idx - 1)
+
+        temp_file = ''
+
+
+</passage><passage file_path=src/helpers/utils.ts>
+};
+
+export const messagesWithoutIndexedChunks = (messages: EasyCodeChatMessage[]) => {
+
+	const firstUserMessage = messages.find(({ role }) => role === 'user');
+	if (firstUserMessage?.content?.length){
+		if (firstUserMessage.content.includes("Based on the code and files above, ")){
+			firstUserMessage.content = firstUserMessage.content.split("Based on the code and files above, ")[firstUserMessage.content.split("Based on the code and files above, ").length-1];
+		} else if (firstUserMessage.content.includes("Based on the text above, ")) {
+			firstUserMessage.content = firstUserMessage.content.split("Based on the text above, ")[firstUserMessage.content.split("Based on the text above, ").length-1];
+		}
+	}
+
+	return messages;
+};
+
+export function convertToChatCompletionRequestMessage(messages: EasyCodeChatMessage[]): ChatCompletionRequestMessage[] {
+	return messages.map(message => {
+		const { easyCodeMetadata, ...rest } = message;
+		return rest;
+	});
+
+</passage><passage file_path=easycode/rank_gpt/download_dataset.py>
+#     # # Run sliding window permutation generation
+#     # new_results = []
+#     # for item in tqdm(rank_results):
+#     #     new_item = sliding_windows(item, rank_start=0, rank_end=100, window_size=20, step=10,
+#     #                                model_name='gpt-3.5-turbo', openai_key=openai_key)
+#     #     new_results.append(new_item)
+
+#     # # Evaluate nDCG@10
+#     # from trec_eval import EvalFunction
+
+#     # temp_file = tempfile.NamedTemporaryFile(delete=False).name
+#     # write_eval_file(new_results, temp_file)
+#     # EvalFunction.eval(['-c', '-m', 'ndcg_cut.10', THE_TOPICS[data], temp_file])
+#     #     # Rename the output file to a better name
+
+</passage><passage file_path=src/webview/pages/components/FileTree.tsx>
+    </Accordion>
+  );
+
+</passage><passage file_path=easycode/decorators.py>
+from functools import wraps
+from sentry_sdk import configure_scope
+from rest_framework.request import Request
+
+def set_sentry_user(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        user = request.user if isinstance(request, Request) else None
+        if user and user.is_authenticated:
+            with configure_scope() as scope:
+                scope.user = {
+                    'email': user.email,
+                    # You can include more user attributes here
+                }
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
+</passage><passage file_path=src/webview/pages/components/AccountModal.tsx>
+      </ModalContent>
+    </Modal>
+  );
+
+</passage><passage file_path=src/webview/components/index.ts>
+export { default as AppNav } from './AppNav';
+export { default as CommandLink } from './CommandLink';
+
+</passage><passage file_path=src/webview/pages/components/AccountModal.tsx>
+        </ModalBody>
+        <ModalFooter>
+            <Button color="danger" variant="light" onClick={onClose}>
+                Close
+            </Button>
+          </ModalFooter>
+
+</passage><passage file_path=src/helpers/chatHistory.ts>
+        }
+    }
+
+    if (truncatedHistoryLength > targetLength) {
+        throw new Error(`Unable to truncate message to ${targetLength} tokens, min. tokens required ${truncatedHistoryLength}`);
+    }
+
+    return truncatedHistory;
+
+</passage><passage file_path=easycode/migrations/0001_initial.py>
+                ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.permission', verbose_name='user permissions')),
+
+</passage><passage file_path=src/helpers/fileNodeUtils.ts>
+export function countSelectedFiles(fileNode: any): number {
+    let count = 0;
+
+    if (fileNode.children && fileNode.children.length > 0) {
+        for (const child of fileNode.children) {
+            count += countSelectedFiles(child);
+        }
+    } else {
+        count = 1;
+    }
+
+    return count;
+}
+
+// Helper function to collect all file nodes
+export function collectFileNodes(fileNodes: any[]): any[] {
+    let collectedNodes: any[] = [];
+
+    for (const fileNode of fileNodes) {
+        // If the fileNode has children, call collectFileNodes recursively
+        if (fileNode.children && fileNode.children.length > 0) {
+            collectedNodes.push(...collectFileNodes(fileNode.children));
+        } else {
+            collectedNodes.push(fileNode);
+        }
+    }
+
+    return collectedNodes;
+
+</passage><passage file_path=src/helpers/chatHistory.ts>
+import { TextDecoder } from "node:util";
+import { EasyCodeChatMessage } from "../types/types";
+import { countMessageTokens, decodeToString, encodeString } from "./tokenCounters";
+
+
+export function messageNumberToIndex(chatHistory: EasyCodeChatMessage[], messageNumber: number) {
+    const tabMsgHistory = chatHistory;
+    let counter = 0;
+    const idx = tabMsgHistory.findIndex(({ role }) => {
+        if (role === 'user') {
+            counter++;
+        }
+        return counter === (messageNumber + 1);
+    });
+    return (idx < 0 ? tabMsgHistory.length : idx) - 1;
+}
+
+// create a copy of message history with history up to message number
+export function sliceMessageHistory(chatHistory: EasyCodeChatMessage[], messageNumber: number) {
+    const tabMsgHistory = chatHistory;
+    return tabMsgHistory.slice(0, messageNumberToIndex(chatHistory, messageNumber) + 1);
+}
+
+</passage><passage file_path=src/webview/pages/data/layout.ts>
+  return json<JsonType<'isLoggedIn'>>({ isLoggedIn: { data: { isLoggedIn: false } } });
+};
+
+const shouldRevalidate: ShouldRevalidateFunction = () => true;
+
+export default {
+  Component: Layout,
+  loader,
+  shouldRevalidate,
+  id: 'layout' as const,
+
+</passage><passage file_path=walkthroughs/askCodebase.md>
+## Ask Codebase a Question
+
+<img src="https://storage.googleapis.com/easycode-assets/askCodebase.gif" alt="Ask Codebase Related Questions">
+
+EasyCode knows about your codebase and uses relevant context to provide answers that are tailored to your project's code and dependencies. Useful for code suggestions, codebase understanding, and code search in a large repo.
+</passage><passage file_path=easycode_server/settings.py>
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = config['gmail']['email']
+EMAIL_HOST_PASSWORD = config['gmail']['password']
+
+WSGI_APPLICATION = 'easycode_server.wsgi.application'
+ASGI_APPLICATION = 'easycode_server.asgi.application'
+
+GRIP_URL = 'http://localhost:5561'
+
+DATA_UPLOAD_MAX_NUMBER_FILES = 5000
+# Database
+# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': postgresqlconfig['database'],
+        'USER': postgresqlconfig['username'],
+        'PASSWORD': postgresqlconfig['password'],
+        'HOST': postgresqlconfig['host'],
+        'PORT': postgresqlconfig['port']
+    }
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379',
+    }
+}
+
+
+</passage><passage file_path=easycode/rank_gpt/trec_eval.py>
+        if len(args) > 1:
+            if trunc:
+                args[-2] = EvalFunction.trunc(args[-2], args[-1])
+                print('Trunc', args[-2])
+
+            if not os.path.exists(args[-2]):
+                args[-2] = get_qrels_file(args[-2])
+            if os.path.exists(args[-1]):
+                # Convert run to trec if it's on msmarco
+                with open(args[-1]) as f:
+                    first_line = f.readline()
+                if 'Q0' not in first_line:
+                    temp_file = tempfile.NamedTemporaryFile(delete=False).name
+                    print('msmarco run detected. Converting to trec...')
+                    run = pd.read_csv(args[-1], delim_whitespace=True, header=None,
+                                      names=['query_id', 'doc_id', 'rank'])
+                    run['score'] = 1 / run['rank']
+                    run.insert(1, 'Q0', 'Q0')
+                    run['name'] = 'TEMPRUN'
+                    run.to_csv(temp_file, sep='\t', header=None, index=None)
+                    args[-1] = temp_file
+
+
+</passage><passage file_path=src/webview/pages/index.ts>
+export { default as login } from './data/login';
+export { default as tryWithoutAccount } from './data/tryWithoutAccount';
+export { default as layout } from './data/layout';
+export { default as chatLayout } from './data/chatLayout';
+export { default as signup } from './data/signup';
+export { default as forgotPassword } from './data/forgotPassword';
+
+</passage><passage file_path=src/webview/tsconfig.json>
+{
+	"compilerOptions": {
+		"module": "ESNext",
+		"esModuleInterop": true,
+		"target": "ESNext",
+		"lib": [
+			"ESNext",
+			"DOM",
+			"DOM.Iterable"
+		],
+		"jsx": "react-jsx",
+		"moduleResolution": "bundler",
+		"isolatedModules": true,
+		"sourceMap": true,
+		"rootDir": "..",
+		"noEmit": true,
+		"strict": true,
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+		"noFallthroughCasesInSwitch": true,
+	},
+
+</passage><passage file_path=easycode/rank_gpt/specialization.py>
+def train(args):
+    model_name = args.model
+    loss_type = args.loss
+    data_path = args.data
+    save_path = args.save_path
+    permutation = args.permutation
+
+    accelerator = Accelerator(gradient_accumulation_steps=8)
+    neg_num = 19
+
+    # Create cross encoder model
+    config = AutoConfig.from_pretrained(model_name)
+    config.num_labels = 1
+    model = AutoModelForSequenceClassification.from_pretrained(model_name, config=config)
+    tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
+
+    # Load data and permutation
+    data = [json.loads(line) for line in open(data_path)]
+    response = json.load(open(permutation))
+    data = receive_response(data, response)
+    dataset = RerankData(data, tokenizer, neg_num=neg_num, label=False)
+
+    # Prepare data loader
+    data_loader = torch.utils.data.DataLoader(dataset, collate_fn=dataset.collate_fn,
+                                              batch_size=1, shuffle=True, num_workers=0)
+    optimizer = AdamW(model.parameters(), 5e-5)
+
+</passage><passage file_path=src/webview/pages/components/HoverToolTip.tsx>
+import { Tooltip } from "@nextui-org/react";
+import { ReactNode } from "react";
+
+interface HoverTooltipProps {
+    children: ReactNode;
+    content: string;
+    [x: string]: any; // for other props
+}
+
+export const HoverTooltip = ({ children, content, ...props }: HoverTooltipProps) => {
+  const globalCloseDelay = 100; // Set your global close delay here
+
+  return (
+    <Tooltip radius="sm" content={content} placement="bottom-end" closeDelay={globalCloseDelay} {...props}>
+      {children}
+    </Tooltip>
+  );
+
+</passage><passage file_path=src/webview/pages/components/FileTree.tsx>
+export const FileTree: React.FC<FileTreeProps> = ({ node, isRoot, onCheckboxChange }) => {
+
+  const handleCheckboxChange = (event: any, node: FileTreeNode) => {
+    const selected = event.target.checked;
+    onCheckboxChange(node, selected);
+  }
+
+  if (node.isFile) {
+    return (
+      <Checkbox value={node.path} key={node.path} isSelected={node.selected} onChange={(event) => handleCheckboxChange(event, node)}>
+        {node.name}
+      </Checkbox>
+    );
+  }
+
+  //Else, this is a folder
+
+</passage><passage file_path=src/webview/pages/components/ErrorModal.tsx>
+export default function ErrorModal({ isOpen, errorMessage, onClose }: ErrorModalProps) {
+
+  return (
+    <Modal radius="sm" size={"lg"} placement={"center"} isOpen={isOpen} onClose={onClose}>
+      <ModalContent>
+        <ModalHeader className="flex flex-col gap-1">Error</ModalHeader>
+        <ModalBody>
+            <>
+              <p>
+                {errorMessage}
+              </p>
+            </>
+        </ModalBody>
+        <ModalFooter>
+            <Button color="danger" variant="light" onClick={onClose}>
+                Close
+            </Button>
+          </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+
+</passage><passage file_path=src/webview/components/ChatHistoryMenuItemContext.tsx>
+import React, { Dispatch, RefObject, SetStateAction } from 'react';
+
+const ChatHistoryMenuItemContext = React.createContext({
+    isHistoryMenuOpen: false,
+    setHistoryMenuOpen: (() => {}) as Dispatch<SetStateAction<boolean>>,
+    historyMenuButtonRef: React.createRef<HTMLDivElement>(),
+  });
+
+export const ChatHistoryMenuItemProvider = ChatHistoryMenuItemContext.Provider;
+export const ChatHistoryMenuItemConsumer = ChatHistoryMenuItemContext.Consumer;
+
+
+</passage><passage file_path=tsconfig.json>
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"esModuleInterop": true,
+		"target": "ES2020",
+		"lib": [
+			"ES2020"
+		],
+		"isolatedModules": true,
+		"jsx": "react-jsx",
+		"sourceMap": true,
+		"rootDir": "src",
+		"strict": true   /* enable all strict type-checking options */
+		/* Additional Checks */
+		// "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
+		// "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
+		// "noUnusedParameters": true,  /* Report errors on unused parameters. */
+	},
+	"include": ["src/**/*"],
+	"exclude": ["src/webview/**/*"]
+
+</passage><passage file_path=easycode/cst_code_splitter.py>
+    # 3. Combining small chunks with bigger ones
+    new_chunks = []
+    current_chunk = Span(0, 0)
+    for chunk in chunks:
+        current_chunk += chunk
+        if non_whitespace_len(
+            current_chunk.extract(source_code)
+        ) > coalesce and "\n" in current_chunk.extract(source_code):
+            new_chunks.append(current_chunk)
+            current_chunk = Span(chunk.end, chunk.end)
+    if len(current_chunk) > 0:
+        new_chunks.append(current_chunk)
+
+    # 4. Changing line numbers
+    line_chunks = [
+        Span(
+            get_line_number(chunk.start, source_code),
+            get_line_number(chunk.end, source_code),
+        )
+        for chunk in new_chunks
+    ]
+
+    # 5. Eliminating empty chunks and convert to char indices
+    char_chunks = [line_to_char_indices(chunk.start, chunk.end, source_code) for chunk in line_chunks if len(chunk) > 0]
+
+    return char_chunks
+</passage><passage file_path=easycode/serializers.py>
+class UserTokenUpdateSerializer(serializers.ModelSerializer):
+    gpt_4_tokens = serializers.IntegerField(write_only=True, required=False)
+    gpt_3_tokens = serializers.IntegerField(write_only=True, required=False)
+    class Meta:
+        model = User
+        fields = ('subscribed', 'gpt_4_tokens_used', 'gpt_4_tokens_available', 'gpt_3_tokens_used', 'gpt_4_tokens', 'gpt_3_tokens')
+
+    def update(self, instance, validated_data):
+        gpt_4_increment_value = validated_data.get('gpt_4_tokens', 0)
+        gpt_3_increment_value = validated_data.get('gpt_3_tokens', 0)
+        
+        if gpt_4_increment_value < 0:
+            raise serializers.ValidationError("increment_value must be greater than or equal to 0")
+            
+        if gpt_3_increment_value < 0:
+            raise serializers.ValidationError("increment_value must be greater than or equal to 0")
+            
+        instance.gpt_4_tokens_used += gpt_4_increment_value
+        instance.gpt_3_tokens_used += gpt_3_increment_value
+        instance.save()
+
+</passage><passage file_path=src/helpers/tokenCounters.ts>
+import { get_encoding } from '@dqbd/tiktoken';
+import { ChatCompletionFunctions, ChatCompletionRequestMessage } from 'openai';
+import { Settings } from '../config/settings';
+
+const enc = get_encoding("cl100k_base");
+
+export function encodeString(string: string){
+    return enc.encode(string);
+}
+
+export function decodeToString(encodedString: Uint32Array){
+    return enc.decode(encodedString);
+}
+
+
+</passage><passage file_path=easycode/serializers.py>
+        return instance
+        
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    """
+    Serializer class to serialize registration requests and create a new user.
+    """
+
+    class Meta:
+        model = User
+        fields = ("id", "email", "password", "gpt_4_tokens_used", "gpt_3_tokens_used", "placeholder_account", "role", "vsc_registration_machine_id")
+        extra_kwargs = {"password": {"write_only": True}}
+        read_only_fields = ("gpt_4_tokens_used",)
+
+
+</passage><passage file_path=src/helpers/jaccardDistance.ts>
+export function jaccardDistance(code1:string, code2:string) {
+    // Split the code into arrays of unique words
+    let code1Words = new Set(code1.split(/\W+/));
+    let code2Words = new Set(code2.split(/\W+/));
+
+    // Calculate the intersection of the two sets
+    let intersection = new Set([...code1Words].filter(word => code2Words.has(word)));
+
+    // Calculate the union of the two sets
+    let union = new Set([...code1Words, ...code2Words]);
+
+    // Calculate the Jaccard coefficient
+    let jaccardCoefficient = intersection.size / union.size;
+
+    // Calculate the Jaccard distance
+    let jaccardDistance = 1 - jaccardCoefficient;
+
+    return jaccardDistance;
+
+</passage><passage file_path=src/webview/routes/routes.tsx>
+import { createRoutesFromElements, redirect, Route } from 'react-router-dom';
+import { chatLayout, chatTab, forgotPassword, layout, login, signup, tryWithoutAccount } from '../pages';
+
+// TODO: error boundary
+const routes = createRoutesFromElements(
+  <Route path="/" {...layout}>
+    <Route index loader={() => redirect('chat')} />
+
+    <Route path="/auth">
+      <Route index loader={() => redirect('login')} />
+      <Route path="signup" {...signup} />
+      <Route path="login" {...login} />
+      <Route path="forgot-password" {...forgotPassword} />
+      <Route path="try" {...tryWithoutAccount} />
+    </Route>
+
+    <Route path="/chat">
+      <Route {...chatLayout}>
+        <Route index loader={() => redirect('new')} />
+        <Route path="new" element={<div></div>} />
+        <Route path=":tabId" {...chatTab} />
+      </Route>
+    </Route>
+  </Route>,
+);
+
+
+</passage><passage file_path=src/modules/diffViewProvider.ts>
+export function createDiffView(document: vscode.TextDocument, selection:vscode.Selection, newCode:string){
+			let uri = document.uri;
+			// Read the content of uri
+			let content1 = document.getText();
+
+			// Get the language of the document
+			let language = path.extname(uri.fsPath).substring(1);
+
+			// Create a virtual document with the same content as uri and the same language
+			let virtualDocUri = vscode.Uri.parse('easycode-temp:' + path.join(uri.fsPath,'virtualDoc'));
+
+			class VirtualFileContentProvider {
+				provideTextDocumentContent(uri: vscode.Uri) {
+					// Extract the selected text from content1
+					let start = document.offsetAt(selection.start);
+					let end = document.offsetAt(selection.end);
+					let before = content1.substring(0, start);
+					let selected = content1.substring(start, end);
+					let after = content1.substring(end);
+					// Replace the content in the selection with the new content
+					let newContent = before + newCode + after;
+					return newContent;
+				}
+			}
+
+			let virtualFileContentProvider = new VirtualFileContentProvider();
+
+</passage><passage file_path=src/helpers/dataCollection.ts>
+export function createDataCollectionLogObject(stringifiedMessageHistory: string, model?: string, feedback?: string) {
+    let logObject = {
+      model: model ?? Settings.getSettings().model,
+      feedback: feedback || "",
+      chatString1: "",
+      chatString2: "",
+      chatString3: "",
+      chatString4: "",
+      chatString5: "",
+      chatString6: "",
+      chatString7: "",
+      chatString8: "",
+  };
+
+  let stringifiedMessageHistoryChunks = splitStringIntoChunks(stringifiedMessageHistory, 32000);
+  //really really stupid manual way of assigning fields due to logging object limitations
+
+</passage><passage file_path=easycode/rank_gpt/trec_eval.py>
+class EvalFunction:
+    @staticmethod
+    def trunc(qrels, run):
+        qrels = get_qrels_file(qrels)
+        run = pd.read_csv(run, delim_whitespace=True, header=None)
+        qrels = pd.read_csv(qrels, delim_whitespace=True, header=None)
+        run[0] = run[0].astype(str)
+        qrels[0] = qrels[0].astype(str)
+
+        qrels = qrels[qrels[0].isin(run[0])]
+        temp_file = tempfile.NamedTemporaryFile(delete=False).name
+        qrels.to_csv(temp_file, sep='\t', header=None, index=None)
+        return temp_file
+
+
+</passage><passage file_path=walkthroughs/askGPT.md>
+## ChatGPT in the IDE
+
+<img src="https://storage.googleapis.com/easycode-assets/askGPT.gif" alt="ChatGPT in the IDE">
+
+
+</passage><passage file_path=src/helpers/utils.ts>
+export const tabTitleFromMessages = (messages: ChatCompletionRequestMessage[], defaultTitle: string = '', maxLength = 15) => {
+	let tabTitle = defaultTitle;
+
+	const firstUserMessage = messages.find(({ role }) => role === 'user');
+	if (firstUserMessage?.content?.length){
+		if (firstUserMessage.content.includes("Based on the code and files above, ")){
+			tabTitle = firstUserMessage.content.split("Based on the code and files above, ")[firstUserMessage.content.split("Based on the code and files above, ").length-1].substring(0, maxLength);
+		} else if (firstUserMessage.content.includes("Based on the text above, ")) {
+			tabTitle = firstUserMessage.content.split("Based on the text above, ")[firstUserMessage.content.split("Based on the text above, ").length-1].substring(0, maxLength);
+		} else if (firstUserMessage.content.includes("\n")){
+			tabTitle = firstUserMessage.content.split("\n")[firstUserMessage.content.split("\n").length-1].substring(0, maxLength);
+		} else {
+			tabTitle = firstUserMessage.content.substring(0, maxLength);
+		}
+	}
+
+	return tabTitle;
+
+</passage><passage file_path=easycode/rank_gpt/specialization.py>
+    for data in ['dl19', 'dl20', 'covid', 'nfc', 'touche', 'dbpedia', 'scifact', 'signal', 'news', 'robust04']:
+        print()
+        print('#' * 20)
+        print(f'Now eval [{data}]')
+        print('#' * 20)
+
+        searcher = LuceneSearcher.from_prebuilt_index(THE_INDEX[data])
+        topics = get_topics(THE_TOPICS[data] if data != 'dl20' else 'dl20')
+        qrels = get_qrels(THE_TOPICS[data])
+        rank_results = run_retriever(topics, searcher, qrels, k=100)
+
+        reranked_data = []
+
+</passage><passage file_path=easycode/rate_limits.py>
+models_to_rate_limit_group_mapping = {
+    'gpt-3.5-turbo': 'gpt-3.5-turbo-group',
+    'gpt-3.5-turbo-16k': 'gpt-3.5-turbo-group',
+    'claude-instant-1': 'gpt-3.5-turbo-group',
+    'gpt-4': 'gpt-4-group',
+    'gpt-4-32k': 'zero-group',
+    'claude-2': 'zero-group'
+}
+
+group_rate_limits = {
+    'gpt-3.5-turbo-group': '10/20m',
+    'gpt-4-group': '5/4h',
+    'zero-group': '0/4h',
+    'ask-codebase': '15/30d'
+    # Add more models and rate limits as needed
+}
+        
+gpt_4_group_model_rate_limits = {
+    'gpt-4': '12/7d',
+    'gpt-4-32k': '12/7d',
+    'gpt-3.5-turbo-16k': '5/20m',
+    'gpt-3.5-turbo': '10/20m',
+    'claude-instant-1': '5/20m',
+    'claude-2': '0/20m',
+}
+</passage><passage file_path=easycode/users.py>
+class CustomUserManager(BaseUserManager):
+    """
+    Custom user model manager where email is the unique identifiers
+    for authentication instead of usernames.
+    """
+    def create_user(self, email, password, **extra_fields):
+        """
+        Create and save a User with the given email and password.
+        """
+        if not email:
+            raise ValueError(_('The Email must be set'))
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save()
+        return user
+        
+
+</passage><passage file_path=src/helpers/fileNodeUtils.ts>
+import * as vscode from 'vscode';
+import type { FileTreeNode } from '../types/types';
+
+
+export function createFileNode(filePath: string, selected: boolean, parentPath: string = ''): FileTreeNode {
+		return {
+			name: filePath,
+			path: parentPath ? `${parentPath}/${filePath}` : filePath,
+			children: [],
+			selected: selected,
+		};
+	}
+
+export function addAllFilesToNodeSelectedMap(allFiles: vscode.Uri[], nodeSelectedMap: Map<string, boolean>) {
+
+    for (const file of allFiles){
+        let filePath = file.path;
+        if (file.path.at(0) == '/')
+            filePath = filePath.substring(1);
+        nodeSelectedMap.set(filePath, true);
+    }
+    return nodeSelectedMap;
+}
+
+
+</passage><passage file_path=src/helpers/tokenCounters.ts>
+/**
+ * Only accurate for OpenAI models
+ * based on https://github.com/openai/openai-cookbook/blob/4fd2b1a6d29d76dcdb3ae65ac12b1a71253d65b6/examples/How_to_count_tokens_with_tiktoken.ipynb
+ */
+export function countMessageTokens(message: ChatCompletionRequestMessage) {
+    // message prefix 3 tokens, suffix 3 tokens
+    let sum = 3 + 3;
+    sum += enc.encode(message.role).length;
+    if (message.name) {
+        sum += enc.encode(message.name).length;
+        // name consumes 1 additional token
+        sum += 1;
+    }
+    if (message.content) {
+        sum += enc.encode(message.content).length;
+    }
+    if (message.function_call?.name) {
+        sum += enc.encode(message.function_call.name).length;
+        sum += 1;
+    }
+    if (message.function_call?.arguments) {
+        sum += enc.encode(message.function_call.arguments).length;
+        sum += 1;
+    }
+
+    return sum;
+}
+
+
+</passage><passage file_path=src/helpers/fileNodeUtils.ts>
+export function processFilesToNestedStructure(files: vscode.Uri[], nodeSelectedMap: Map<string, boolean>) {
+    let root = createFileNode('', false);
+
+    for (const file of files) {
+        let current = root;
+        const filePathComponents = file.path.split('/');
+
+        for (const [index, component] of filePathComponents.entries()) {
+        let childNode = current.children.find((child: any) => child.name === component);
+
+        if (!childNode) {
+            let selected = false;
+            if (nodeSelectedMap.has(`${current.path}/${component}`)) {
+                selected = true;
+            }
+            childNode = createFileNode(component, selected, current.path);
+            current.children.push(childNode);
+        }
+
+        if (index === filePathComponents.length - 1) {
+            childNode.isFile = true;
+        }
+
+        current = childNode;
+        }
+    }
+
+    return root.children;
+}
+
+
+</passage><passage file_path=src/modules/diffViewProvider.ts>
+			vscode.workspace.registerTextDocumentContentProvider('easycode-temp', virtualFileContentProvider);
+
+			// Open the diff view
+			vscode.commands.executeCommand('vscode.diff', virtualDocUri, uri, 'EasyCode Diff View');
+
+</passage><passage file_path=easycode/rank_gpt/specialization.py>
+        EvalFunction.eval(['-c', '-m', 'ndcg_cut.10', THE_TOPICS[data], temp_file])
+
+
+if __name__ == '__main__':
+    args = parse_args()
+    model, tokenizer = None, None
+    if args.do_train:
+        model, tokenizer = train(args)
+    if args.de_eval:
+
+</passage><passage file_path=easycode_server/celery.py>
+import os
+
+from celery import Celery
+from kombu import Exchange, Queue
+
+# Set the default Django settings module for the 'celery' program.
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'easycode_server.settings')
+
+task_queues = (
+    Queue('celery', routing_key='celery'),
+    Queue('transient', Exchange('transient', delivery_mode=1),
+          routing_key='transient', durable=False),
+    Queue('index-codebase', Exchange('index-codebase', delivery_mode=1),
+      routing_key='index-codebase', durable=False),
+)
+
+app = Celery('easycode_server')
+
+class Config:
+    broker_url = "redis://localhost:6379"
+    result_backend = "redis"
+    worker_prefetch_multiplier = 1
+    task_time_limit = 450
+    
+app.config_from_object(Config)
+
+# Load task modules from all registered Django apps.
+app.autodiscover_tasks()
+
+
+@app.task(bind=True)
+def debug_task(self):
+    print(f'Request: {self.request!r}')
+</passage><passage file_path=src/helpers/tokenCounters.ts>
+/**
+ * Estimate input token usage for each function definition
+ * The estimation will be off by a few tokens from the actual usage.
+ * There is no official documentation on how function definitions should be counted,
+ * see https://github.com/openai/openai-cookbook/issues/500
+ */
+
+export function countFunctionDefinitionTokens(functions: ReadonlyArray<ChatCompletionFunctions>) {
+    return functions.reduce((agg, curr) => agg + enc.encode(JSON.stringify(curr)).length, 0);
+}
+
+export function countMessageHistoryTokens(messageHistory: ChatCompletionRequestMessage[], functions: ReadonlyArray<ChatCompletionFunctions>) {
+    const msgTokenCount = messageHistory.reduce((agg, curr) => agg + countMessageTokens(curr), 0);
+    const funcTokenCount = countFunctionDefinitionTokens(functions);
+
+    return msgTokenCount + funcTokenCount;
+
+</passage><passage file_path=easycode_server/wsgi.py>
+"""
+WSGI config for easycode_server project.
+
+It exposes the WSGI callable as a module-level variable named ``application``.
+
+For more information on this file, see
+https://docs.djangoproject.com/en/3.2/howto/deployment/wsgi/
+"""
+
+import os
+
+from django.core.wsgi import get_wsgi_application
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'easycode_server.settings')
+
+
+</passage><passage file_path=easycode/users.py>
+    def create_superuser(self, email, password, **extra_fields):
+        """
+        Create and save a SuperUser with the given email and password.
+        """
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError(_('Superuser must have is_staff=True.'))
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError(_('Superuser must have is_superuser=True.'))
+        return self.create_user(email, password, **extra_fields)
+</passage><passage file_path=easycode_server/asgi.py>
+"""
+ASGI config for easycode_server project.
+
+It exposes the ASGI callable as a module-level variable named ``application``.
+
+For more information on this file, see
+https://docs.djangoproject.com/en/3.2/howto/deployment/asgi/
+"""
+
+import os
+
+from channels.routing import ProtocolTypeRouter, URLRouter
+from django.core.asgi import get_asgi_application
+from channels.auth import AuthMiddlewareStack
+from django.urls import path, re_path
+import django_eventstream
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'easycode_server.settings')
+
+django_asgi_app = get_asgi_application()
+
+application = ProtocolTypeRouter({
+    'http': URLRouter([
+        path('events/', AuthMiddlewareStack(
+            URLRouter(django_eventstream.routing.urlpatterns))),
+        re_path(r'', django_asgi_app),
+    ]),
+
+</passage>

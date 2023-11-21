@@ -1,0 +1,10 @@
+[core]
+	editor = \"C:\\Users\\aluno b\\AppData\\Local\\Programs\\Microsoft VS Code\\bin\\code\" --wait
+[user]
+	name = toxiglinter40
+	email = 124887158+toxiglinter40@users.noreply.github.com
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
